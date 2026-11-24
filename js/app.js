@@ -1,4 +1,5 @@
 // Helpers compartilhados + renderizador da pagina publica (usado tambem no preview).
+// Requer js/i18n.js carregado antes.
 const sb = window.supabase.createClient(LINKBEE.SUPABASE_URL, LINKBEE.SUPABASE_ANON_KEY);
 
 function esc(s) {
@@ -24,14 +25,14 @@ function toast(msg, type = "ok") {
 
 async function uploadImage(file) {
   if (!file) return null;
-  if (!file.type.startsWith("image/")) throw new Error("Escolha um arquivo de imagem.");
-  if (file.size > 5 * 1024 * 1024) throw new Error("Imagem muito grande (max. 5MB).");
+  if (!file.type.startsWith("image/")) throw new I18N.KeyErr("err_img_type");
+  if (file.size > 5 * 1024 * 1024) throw new I18N.KeyErr("err_img_big");
   const fd = new FormData();
   fd.append("file", file);
   fd.append("upload_preset", LINKBEE.CLOUDINARY_UPLOAD_PRESET);
   const r = await fetch(`https://api.cloudinary.com/v1_1/${LINKBEE.CLOUDINARY_CLOUD_NAME}/image/upload`, { method: "POST", body: fd });
   const j = await r.json();
-  if (!r.ok) throw new Error(j.error?.message || "Falha no upload da imagem.");
+  if (!r.ok) throw new Error(j.error?.message || I18N.t("err_upload"));
   return j.secure_url;
 }
 
@@ -47,12 +48,12 @@ ICONS.facebook = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21
 
 // Redes: a pessoa digita so o usuario (ou numero) e o sistema monta o link.
 const NETWORKS = {
-  instagram: { label: "Instagram", ph: "seu usuário (ex.: sandrasamanta)", build: (u) => `https://www.instagram.com/${u}`, detect: /instagram\.com\/([^/?#]+)/i },
-  tiktok: { label: "TikTok", ph: "seu usuário (ex.: sandrasamanta)", build: (u) => `https://www.tiktok.com/@${u}`, detect: /tiktok\.com\/@?([^/?#]+)/i },
-  linkedin: { label: "LinkedIn", ph: "seu usuário (ex.: sandra-silva-185225436)", build: (u) => `https://www.linkedin.com/in/${u}`, detect: /linkedin\.com\/in\/([^/?#]+)/i },
-  facebook: { label: "Facebook", ph: "seu usuário (ex.: sara.ferreira.5876)", build: (u) => `https://www.facebook.com/${u}`, detect: /facebook\.com\/([^/?#]+)/i },
-  whatsapp: { label: "WhatsApp", ph: "número com DDI (ex.: 351961082332)", build: (u) => `https://wa.me/${u}`, detect: /wa\.me\/(\d+)/i },
-  youtube: { label: "YouTube", ph: "seu canal (ex.: seucanal)", build: (u) => `https://www.youtube.com/@${u}`, detect: /youtube\.com\/@?([^/?#]+)/i },
+  instagram: { label: "Instagram", build: (u) => `https://www.instagram.com/${u}`, detect: /instagram\.com\/([^/?#]+)/i },
+  tiktok: { label: "TikTok", build: (u) => `https://www.tiktok.com/@${u}`, detect: /tiktok\.com\/@?([^/?#]+)/i },
+  linkedin: { label: "LinkedIn", build: (u) => `https://www.linkedin.com/in/${u}`, detect: /linkedin\.com\/in\/([^/?#]+)/i },
+  facebook: { label: "Facebook", build: (u) => `https://www.facebook.com/${u}`, detect: /facebook\.com\/([^/?#]+)/i },
+  whatsapp: { label: "WhatsApp", build: (u) => `https://wa.me/${u}`, detect: /wa\.me\/(\d+)/i },
+  youtube: { label: "YouTube", build: (u) => `https://www.youtube.com/@${u}`, detect: /youtube\.com\/@?([^/?#]+)/i },
 };
 
 function buildNetworkUrl(net, input) {
@@ -77,16 +78,12 @@ function detectNetwork(url) {
   return { net: "other", value: url || "" };
 }
 
-const SOCIAL_FIELDS = [
-  ["instagram", "Instagram", NETWORKS.instagram.ph],
-  ["tiktok", "TikTok", NETWORKS.tiktok.ph],
-  ["linkedin", "LinkedIn", NETWORKS.linkedin.ph],
-  ["facebook", "Facebook", NETWORKS.facebook.ph],
-  ["whatsapp", "WhatsApp", NETWORKS.whatsapp.ph],
-  ["youtube", "YouTube", NETWORKS.youtube.ph],
-  ["website", "Site (link completo)", "https://seusite.com"],
-  ["email", "E-mail", "voce@email.com"],
-];
+const SOCIAL_KEYS = ["instagram", "tiktok", "linkedin", "facebook", "whatsapp", "youtube", "website", "email"];
+// [chave, rotulo, placeholder] no idioma atual
+function socialFields() {
+  const t = I18N.t;
+  return SOCIAL_KEYS.map((k) => [k, NETWORKS[k] ? NETWORKS[k].label : t("soc_" + k), t("ph_" + k)]);
+}
 
 function socialHref(key, val) {
   val = String(val || "").trim();
@@ -116,10 +113,10 @@ function linkIconHtml(iconUrl, cls) {
 
 const DEFAULT_THEME = { bg: "#120c01", useGradient: false, bg2: "#2a1d04", title: "#fdc603", text: "#f7dd9d", btn: "#f7dd9d", btnText: "#120c01", shape: "pill" };
 const THEME_PRESETS = {
-  "Escuro": DEFAULT_THEME,
-  "Claro": { bg: "#fffdf7", useGradient: false, bg2: "#f7dd9d", title: "#120c01", text: "#4a3f26", btn: "#fdc603", btnText: "#120c01", shape: "round" },
-  "Amarelo": { bg: "#fdc603", useGradient: true, bg2: "#f1a201", title: "#120c01", text: "#120c01", btn: "#ffffff", btnText: "#120c01", shape: "pill" },
-  "Lilas": { bg: "#9b7be6", useGradient: true, bg2: "#b8a0f0", title: "#5b0fd6", text: "#ffffff", btn: "#ffffff", btnText: "#5b0fd6", shape: "pill" },
+  dark: DEFAULT_THEME,
+  light: { bg: "#fffdf7", useGradient: false, bg2: "#f7dd9d", title: "#120c01", text: "#4a3f26", btn: "#fdc603", btnText: "#120c01", shape: "round" },
+  yellow: { bg: "#fdc603", useGradient: true, bg2: "#f1a201", title: "#120c01", text: "#120c01", btn: "#ffffff", btnText: "#120c01", shape: "pill" },
+  lilac: { bg: "#9b7be6", useGradient: true, bg2: "#b8a0f0", title: "#5b0fd6", text: "#ffffff", btn: "#ffffff", btnText: "#5b0fd6", shape: "pill" },
 };
 const SHAPES = { pill: ["999px", "50%"], round: ["16px", "12px"], square: ["0", "0"] };
 
@@ -149,7 +146,7 @@ function renderPage(el, page, links) {
   applyTheme(el, page);
   const name = page.title || page.slug || "";
   const initial = esc((name || "?").trim().charAt(0).toUpperCase());
-  const socials = SOCIAL_FIELDS.map(([k]) => {
+  const socials = SOCIAL_KEYS.map((k) => {
     const h = socialHref(k, page.socials?.[k]);
     return h ? `<a class="lb-social" href="${esc(h)}" target="_blank" rel="noopener noreferrer" aria-label="${k}">${ICONS[k]}</a>` : "";
   }).join("");
@@ -165,7 +162,7 @@ function renderPage(el, page, links) {
     ${page.bio ? `<p class="lb-bio">${esc(page.bio)}</p>` : ""}
     ${socials ? `<div class="lb-socials">${socials}</div>` : ""}
     <div class="lb-links">${items}</div>
-    <a class="lb-foot" href="/">Crie o seu <b>Linkbee</b> gratis</a>`;
+    <a class="lb-foot" href="/">${I18N.t("pub_foot")}</a>`;
 }
 
 function publicUrl(slug) {

@@ -7,104 +7,110 @@
 <title>Painel — Linkbee</title>
 <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
+<body data-title="title_dash">
 <header class="topbar">
   <a class="logo" href="/dashboard.html"><img src="/images/logo.svg" alt="Linkbee" class="logo-img"></a>
-  <nav><a class="on" href="/dashboard.html">Meu Linkbee</a><a href="/conta.html">Conta</a></nav>
-  <div class="urlpill"><span id="urlTxt">...</span><button class="btn sm brand" id="copyBtn">Copiar</button></div>
+  <nav><a class="on" href="/dashboard.html" data-i18n="nav_my">Meu Linkbee</a><a href="/conta.html" data-i18n="nav_account">Conta</a></nav>
+  <div class="right">
+    <div class="lang" role="group" data-i18n-aria="lang_aria" aria-label="Idioma"><button type="button" data-lang="pt">PT</button><button type="button" data-lang="es">ES</button><button type="button" data-lang="en">EN</button></div>
+    <div class="urlpill"><span id="urlTxt">...</span><button class="btn sm brand" id="copyBtn" data-i18n="copy">Copiar</button></div>
+  </div>
 </header>
 
 <main class="workspace">
   <div>
     <section class="panel">
-      <h2>Perfil</h2>
+      <h2 data-i18n="profile_h">Perfil</h2>
       <div class="profile-row">
         <div class="avatar-pick" id="avatarBox"></div>
         <div>
-          <button class="btn soft sm" id="avatarBtn" type="button">Trocar foto</button>
+          <button class="btn soft sm" id="avatarBtn" type="button" data-i18n="change_photo">Trocar foto</button>
           <input type="file" id="avatarFile" accept="image/*" class="hidden">
         </div>
       </div>
-      <label for="pTitle">Titulo</label>
+      <label for="pTitle" data-i18n="lbl_title">Título</label>
       <input id="pTitle" type="text" maxlength="60">
-      <label for="pBio">Bio</label>
+      <label for="pBio" data-i18n="lbl_bio">Bio</label>
       <textarea id="pBio" maxlength="200"></textarea>
-      <label>Redes sociais</label>
+      <label data-i18n="lbl_socials">Redes sociais</label>
       <div class="two" id="socialFields"></div>
-      <button class="btn brand" id="saveProfile" style="margin-top:16px">Salvar perfil</button>
+      <button class="btn brand" id="saveProfile" style="margin-top:16px" data-i18n="save_profile">Salvar perfil</button>
     </section>
 
     <section class="panel">
-      <h2>Aparência</h2>
-      <label>Temas prontos</label>
+      <h2 data-i18n="look_h">Aparência</h2>
+      <label data-i18n="lbl_presets">Temas prontos</label>
       <div class="presets" id="presets"></div>
-      <label>Cores</label>
+      <label data-i18n="lbl_colors">Cores</label>
       <div class="theme-grid">
-        <div class="colorrow"><input type="color" id="tBg"><span>Fundo</span></div>
-        <div class="colorrow"><input type="color" id="tBg2"><span>Fundo 2 (degradê)</span></div>
-        <div class="colorrow"><input type="color" id="tTitle"><span>Título e ícones</span></div>
-        <div class="colorrow"><input type="color" id="tText"><span>Texto (bio)</span></div>
-        <div class="colorrow"><input type="color" id="tBtn"><span>Fundo dos botões</span></div>
-        <div class="colorrow"><input type="color" id="tBtnText"><span>Texto dos botões</span></div>
+        <div class="colorrow"><input type="color" id="tBg"><span data-i18n="c_bg">Fundo</span></div>
+        <div class="colorrow"><input type="color" id="tBg2"><span data-i18n="c_bg2">Fundo 2 (degradê)</span></div>
+        <div class="colorrow"><input type="color" id="tTitle"><span data-i18n="c_title">Título e ícones</span></div>
+        <div class="colorrow"><input type="color" id="tText"><span data-i18n="c_text">Texto (bio)</span></div>
+        <div class="colorrow"><input type="color" id="tBtn"><span data-i18n="c_btn">Fundo dos botões</span></div>
+        <div class="colorrow"><input type="color" id="tBtnText"><span data-i18n="c_btntext">Texto dos botões</span></div>
       </div>
-      <label style="display:flex;gap:8px;align-items:center;font-weight:600"><input type="checkbox" id="tGrad"> Usar degradê no fundo</label>
-      <label>Formato dos botões</label>
+      <label style="display:flex;gap:8px;align-items:center;font-weight:600"><input type="checkbox" id="tGrad"> <span data-i18n="use_gradient">Usar degradê no fundo</span></label>
+      <label data-i18n="lbl_shape">Formato dos botões</label>
       <div class="shapes">
-        <label><input type="radio" name="shape" value="pill"><b class="s-pill">Arredondado</b></label>
-        <label><input type="radio" name="shape" value="round"><b class="s-round">Suave</b></label>
-        <label><input type="radio" name="shape" value="square"><b class="s-square">Quadrado</b></label>
+        <label><input type="radio" name="shape" value="pill"><b class="s-pill" data-i18n="shape_pill">Arredondado</b></label>
+        <label><input type="radio" name="shape" value="round"><b class="s-round" data-i18n="shape_round">Suave</b></label>
+        <label><input type="radio" name="shape" value="square"><b class="s-square" data-i18n="shape_square">Quadrado</b></label>
       </div>
-      <button class="btn brand" id="saveTheme" style="margin-top:16px">Salvar aparência</button>
+      <button class="btn brand" id="saveTheme" style="margin-top:16px" data-i18n="save_theme">Salvar aparência</button>
     </section>
 
     <section class="panel">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <h2>Links</h2>
-        <button class="btn sm" id="addLink">+ Adicionar link</button>
+        <h2 data-i18n="links_h">Links</h2>
+        <button class="btn sm" id="addLink" data-i18n="add_link">+ Adicionar link</button>
       </div>
       <div id="linkList"></div>
     </section>
   </div>
 
   <aside class="preview-wrap">
-    <button class="preview-close" id="previewClose" type="button" aria-label="Fechar prévia">&times;</button>
+    <button class="preview-close" id="previewClose" type="button" data-i18n-aria="preview_close" aria-label="Fechar prévia">&times;</button>
     <div class="phone"><div class="screen"><div class="lb" id="preview"></div></div></div>
   </aside>
-  <button class="fab" id="previewFab" type="button">&#128241; Ver prévia</button>
+  <button class="fab" id="previewFab" type="button" data-i18n="preview_fab">📱 Ver prévia</button>
 </main>
 
 <dialog id="linkDlg">
   <form class="dlg" id="linkForm">
-    <button class="x" type="button" id="linkClose">&times;</button>
-    <h2 id="linkDlgTitle">Novo link</h2>
+    <button class="x" type="button" id="linkClose" data-i18n-aria="close_aria" aria-label="Fechar">&times;</button>
+    <h2 id="linkDlgTitle" data-i18n="new_link">Novo link</h2>
     <div class="profile-row">
       <div class="avatar-pick" id="iconBox" style="width:60px;height:60px;font-size:22px;border-radius:14px"></div>
       <div>
-        <button class="btn soft sm" id="iconBtn" type="button">Adicionar imagem</button>
-        <button class="btn ghost sm hidden" id="iconRm" type="button">Remover</button>
+        <button class="btn soft sm" id="iconBtn" type="button" data-i18n="add_image">Adicionar imagem</button>
+        <button class="btn ghost sm hidden" id="iconRm" type="button" data-i18n="remove">Remover</button>
         <input type="file" id="iconFile" accept="image/*" class="hidden">
       </div>
     </div>
-    <label>Ou escolha um ícone</label>
+    <label data-i18n="or_icon">Ou escolha um ícone</label>
     <div class="icon-presets" id="iconPresets"></div>
-    <label for="lNet">Rede</label>
+    <label for="lNet" data-i18n="lbl_net">Rede</label>
     <select id="lNet"></select>
-    <label for="lTitle">Titulo</label>
+    <label for="lTitle" data-i18n="lbl_ltitle">Título</label>
     <input id="lTitle" type="text" maxlength="80" required>
-    <label for="lSub">Subtitulo (opcional)</label>
+    <label for="lSub" data-i18n="lbl_lsub">Subtítulo (opcional)</label>
     <input id="lSub" type="text" maxlength="120">
-    <label for="lUrl" id="lUrlLabel">Endereço (URL)</label>
+    <label for="lUrl" id="lUrlLabel" data-i18n="lbl_url">Endereço (URL)</label>
     <input id="lUrl" type="text" placeholder="https://" required>
-    <button class="btn brand block" id="linkSave" style="margin-top:18px">Salvar</button>
+    <button class="btn brand block" id="linkSave" style="margin-top:18px" data-i18n="save">Salvar</button>
   </form>
 </dialog>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/js/config.js"></script>
+<script src="/js/i18n.js"></script>
 <script src="/js/app.js"></script>
 <script>
+const t = I18N.t;
 let user, page, links = [], editing = null, editIcon = null;
 const $ = (id) => document.getElementById(id);
+const errText = (err) => (err.key ? t(err.key) : err.message);
 
 (async function init() {
   const { data } = await sb.auth.getSession();
@@ -120,7 +126,7 @@ const $ = (id) => document.getElementById(id);
     p = r.data;
   }
   page = p;
-  $("socialFields").innerHTML = SOCIAL_FIELDS.map(([k, l, ph]) => `<div><label>${l}</label><input type="text" data-soc="${k}" placeholder="${esc(ph)}"></div>`).join("");
+  drawSocialFields();
   $("pTitle").value = page.title; $("pBio").value = page.bio;
   document.querySelectorAll("[data-soc]").forEach((i) => (i.value = page.socials?.[i.dataset.soc] || ""));
   const u = publicUrl(page.slug);
@@ -129,6 +135,17 @@ const $ = (id) => document.getElementById(id);
   await loadLinks();
   bindLive();
 })();
+
+// Campos de redes: redesenha ao trocar de idioma, preservando o que foi digitado
+function drawSocialFields() {
+  const vals = {};
+  document.querySelectorAll("[data-soc]").forEach((i) => (vals[i.dataset.soc] = i.value));
+  $("socialFields").innerHTML = socialFields().map(([k, l, ph]) => `<div><label>${esc(l)}</label><input type="text" data-soc="${k}" placeholder="${esc(ph)}"></div>`).join("");
+  document.querySelectorAll("[data-soc]").forEach((i) => {
+    i.value = vals[i.dataset.soc] ?? page?.socials?.[i.dataset.soc] ?? "";
+    i.addEventListener("input", drawPreview);
+  });
+}
 
 async function loadLinks() {
   const { data, error } = await sb.from("links").select("*").eq("page_id", page.id).order("position");
@@ -150,14 +167,17 @@ function readTheme() {
   };
 }
 function fillTheme(raw) {
-  const t = themeOf({ theme: raw });
-  $("tBg").value = t.bg; $("tBg2").value = t.bg2; $("tGrad").checked = t.useGradient;
-  $("tTitle").value = t.title; $("tText").value = t.text; $("tBtn").value = t.btn; $("tBtnText").value = t.btnText;
-  document.querySelector(`input[name="shape"][value="${t.shape}"]`).checked = true;
+  const th = themeOf({ theme: raw });
+  $("tBg").value = th.bg; $("tBg2").value = th.bg2; $("tGrad").checked = th.useGradient;
+  $("tTitle").value = th.title; $("tText").value = th.text; $("tBtn").value = th.btn; $("tBtnText").value = th.btnText;
+  document.querySelector(`input[name="shape"][value="${th.shape}"]`).checked = true;
+}
+function drawPresets() {
+  $("presets").innerHTML = Object.keys(THEME_PRESETS).map((n) => `<button type="button" class="preset" data-p="${n}">${esc(t("preset_" + n))}</button>`).join("");
 }
 function initTheme() {
   fillTheme(page.theme);
-  $("presets").innerHTML = Object.keys(THEME_PRESETS).map((n) => `<button type="button" class="preset" data-p="${n}">${n}</button>`).join("");
+  drawPresets();
   $("presets").addEventListener("click", (e) => {
     const n = e.target.dataset.p; if (!n) return;
     fillTheme(THEME_PRESETS[n]); drawPreview();
@@ -168,8 +188,8 @@ function initTheme() {
     const theme = readTheme();
     const { error } = await sb.from("pages").update({ theme }).eq("id", page.id);
     $("saveTheme").disabled = false;
-    if (error) return toast(/theme/i.test(error.message) ? "Rode o supabase/migration_theme.sql no Supabase primeiro." : error.message, "err");
-    page.theme = theme; toast("Aparência salva!");
+    if (error) return toast(/theme/i.test(error.message) ? t("err_theme_migration") : error.message, "err");
+    page.theme = theme; toast(t("theme_saved"));
   };
 }
 function drawPreview() { renderPage($("preview"), currentPage(), links); $("preview").querySelectorAll("a").forEach((a) => a.addEventListener("click", (e) => e.preventDefault())); drawAvatar(); }
@@ -178,20 +198,19 @@ function drawAvatar() {
 }
 function bindLive() {
   ["pTitle", "pBio"].forEach((id) => $(id).addEventListener("input", drawPreview));
-  document.querySelectorAll("[data-soc]").forEach((i) => i.addEventListener("input", drawPreview));
 }
 
 function drawLinks() {
   const box = $("linkList");
-  if (!links.length) { box.innerHTML = '<p class="empty">Nenhum link ainda. Clique em "Adicionar link".</p>'; return; }
+  if (!links.length) { box.innerHTML = `<p class="empty">${esc(t("no_links"))}</p>`; return; }
   box.innerHTML = links.map((l, i) => `
     <div class="linkcard" data-id="${l.id}">
       <div class="ico">${linkIconHtml(l.icon_url, "ico-in") || esc(l.title.charAt(0).toUpperCase())}</div>
       <div class="info"><b>${esc(l.title)}</b><small>${esc(l.url)}</small></div>
-      <button class="iconbtn" data-act="up" ${i === 0 ? "disabled" : ""} title="Subir">&uarr;</button>
-      <button class="iconbtn" data-act="down" ${i === links.length - 1 ? "disabled" : ""} title="Descer">&darr;</button>
-      <button class="iconbtn" data-act="edit" title="Editar">&#9998;</button>
-      <button class="iconbtn del" data-act="del" title="Excluir">&times;</button>
+      <button class="iconbtn" data-act="up" ${i === 0 ? "disabled" : ""} title="${esc(t("t_up"))}">&uarr;</button>
+      <button class="iconbtn" data-act="down" ${i === links.length - 1 ? "disabled" : ""} title="${esc(t("t_down"))}">&darr;</button>
+      <button class="iconbtn" data-act="edit" title="${esc(t("t_edit"))}">&#9998;</button>
+      <button class="iconbtn del" data-act="del" title="${esc(t("t_delete"))}">&times;</button>
       <label class="switch"><input type="checkbox" data-act="tog" ${l.active ? "checked" : ""}><i></i></label>
     </div>`).join("");
 }
@@ -203,7 +222,7 @@ $("linkList").addEventListener("click", async (e) => {
   const idx = links.findIndex((l) => l.id === card.dataset.id);
   if (act === "edit") return openLinkDlg(links[idx]);
   if (act === "del") {
-    if (!confirm("Excluir este link?")) return;
+    if (!confirm(t("confirm_del_link"))) return;
     const { error } = await sb.from("links").delete().eq("id", links[idx].id);
     if (error) return toast(error.message, "err");
     links.splice(idx, 1); drawLinks(); drawPreview(); return;
@@ -213,7 +232,7 @@ $("linkList").addEventListener("click", async (e) => {
   [links[idx], links[j]] = [links[j], links[idx]];
   drawLinks(); drawPreview();
   const res = await Promise.all(links.map((l, i) => { l.position = i; return sb.from("links").update({ position: i }).eq("id", l.id); }));
-  if (res.some((r) => r.error)) toast("Erro ao reordenar.", "err");
+  if (res.some((r) => r.error)) toast(t("err_reorder"), "err");
 });
 $("linkList").addEventListener("change", async (e) => {
   if (e.target.dataset.act !== "tog") return;
@@ -234,14 +253,14 @@ previewWrap.addEventListener("click", (e) => { if (e.target === previewWrap) pre
 $("avatarBtn").onclick = () => $("avatarFile").click();
 $("avatarFile").onchange = async (e) => {
   const f = e.target.files[0]; if (!f) return;
-  $("avatarBtn").disabled = true; $("avatarBtn").textContent = "Enviando...";
+  $("avatarBtn").disabled = true; $("avatarBtn").textContent = t("uploading");
   try {
     page.avatar_url = await uploadImage(f);
     const { error } = await sb.from("pages").update({ avatar_url: page.avatar_url }).eq("id", page.id);
     if (error) throw error;
-    drawPreview(); toast("Foto atualizada!");
-  } catch (err) { toast(err.message, "err"); }
-  $("avatarBtn").disabled = false; $("avatarBtn").textContent = "Trocar foto"; e.target.value = "";
+    drawPreview(); toast(t("photo_updated"));
+  } catch (err) { toast(errText(err), "err"); }
+  $("avatarBtn").disabled = false; $("avatarBtn").textContent = t("change_photo"); e.target.value = "";
 };
 $("saveProfile").onclick = async () => {
   const c = currentPage();
@@ -250,9 +269,9 @@ $("saveProfile").onclick = async () => {
   $("saveProfile").disabled = false;
   if (error) return toast(error.message, "err");
   Object.assign(page, { title: c.title.trim(), bio: c.bio.trim(), socials: c.socials });
-  toast("Perfil salvo!");
+  toast(t("profile_saved"));
 };
-$("copyBtn").onclick = async () => { await navigator.clipboard.writeText(publicUrl(page.slug)); toast("Link copiado!"); };
+$("copyBtn").onclick = async () => { await navigator.clipboard.writeText(publicUrl(page.slug)); toast(t("copied")); };
 
 // Dialogo de link
 function drawIcon() {
@@ -266,9 +285,13 @@ $("iconPresets").addEventListener("click", (e) => {
   const b = e.target.closest("button[data-p]"); if (!b) return;
   editIcon = "preset:" + b.dataset.p; drawIcon();
 });
+function setDlgTitle() {
+  $("linkDlgTitle").dataset.i18n = editing ? "edit_link" : "new_link";
+  $("linkDlgTitle").textContent = t($("linkDlgTitle").dataset.i18n);
+}
 function openLinkDlg(l) {
   editing = l || null; editIcon = l?.icon_url || null;
-  $("linkDlgTitle").textContent = l ? "Editar link" : "Novo link";
+  setDlgTitle();
   $("lTitle").value = l?.title || ""; $("lSub").value = l?.subtitle || "";
   const d = l ? detectNetwork(l.url) : { net: "instagram", value: "" };
   $("lNet").value = d.net; $("lUrl").value = d.value;
@@ -276,11 +299,17 @@ function openLinkDlg(l) {
   drawIcon(); $("linkDlg").showModal();
 }
 const NET_ORDER = ["instagram", "tiktok", "linkedin", "facebook", "whatsapp", "other"];
-$("lNet").innerHTML = NET_ORDER.map((k) => `<option value="${k}">${k === "other" ? "Outro (link)" : NETWORKS[k].label}</option>`).join("");
+function drawNetOptions() {
+  const cur = $("lNet").value || "instagram";
+  $("lNet").innerHTML = NET_ORDER.map((k) => `<option value="${k}">${k === "other" ? esc(t("net_other")) : NETWORKS[k].label}</option>`).join("");
+  $("lNet").value = cur;
+}
+drawNetOptions();
 function syncNet(auto) {
   const k = $("lNet").value, other = k === "other";
-  $("lUrlLabel").textContent = other ? "Endereço (URL)" : k === "whatsapp" ? "Número com DDI" : "Usuário";
-  $("lUrl").placeholder = other ? "https://" : NETWORKS[k].ph;
+  const key = other ? "lbl_url" : k === "whatsapp" ? "lbl_phone" : "lbl_user_short";
+  $("lUrlLabel").dataset.i18n = key; $("lUrlLabel").textContent = t(key);
+  $("lUrl").placeholder = other ? "https://" : t("ph_" + k);
   if (auto && !other) {
     editIcon = "preset:" + k; drawIcon();
     if (!$("lTitle").value.trim()) $("lTitle").value = NETWORKS[k].label;
@@ -293,15 +322,15 @@ $("iconBtn").onclick = () => $("iconFile").click();
 $("iconRm").onclick = () => { editIcon = null; drawIcon(); };
 $("iconFile").onchange = async (e) => {
   const f = e.target.files[0]; if (!f) return;
-  try { $("iconBtn").textContent = "Enviando..."; editIcon = await uploadImage(f); drawIcon(); }
-  catch (err) { toast(err.message, "err"); }
-  $("iconBtn").textContent = "Adicionar imagem"; e.target.value = "";
+  try { $("iconBtn").textContent = t("uploading"); editIcon = await uploadImage(f); drawIcon(); }
+  catch (err) { toast(errText(err), "err"); }
+  $("iconBtn").textContent = t("add_image"); e.target.value = "";
 };
 $("linkForm").onsubmit = async (e) => {
   e.preventDefault();
   const net = $("lNet").value;
   const url = net === "other" ? safeUrl($("lUrl").value) : buildNetworkUrl(net, $("lUrl").value);
-  if (!url) return toast("Preencha o usuário, número ou link.", "err");
+  if (!url) return toast(t("err_fill"), "err");
   $("linkSave").disabled = true;
   const row = { title: $("lTitle").value.trim(), subtitle: $("lSub").value.trim(), url, icon_url: editIcon || (net === "other" ? null : "preset:" + net) };
   let res;
@@ -310,8 +339,15 @@ $("linkForm").onsubmit = async (e) => {
   $("linkSave").disabled = false;
   if (res.error) return toast(res.error.message, "err");
   if (editing) links[links.findIndex((l) => l.id === editing.id)] = res.data; else links.push(res.data);
-  $("linkDlg").close(); drawLinks(); drawPreview(); toast("Link salvo!");
+  $("linkDlg").close(); drawLinks(); drawPreview(); toast(t("link_saved"));
 };
+
+// Ao trocar de idioma, redesenha o que e gerado por JavaScript
+I18N.aoMudar(() => {
+  if (!page) return;
+  drawSocialFields(); drawPresets(); drawNetOptions(); drawLinks(); drawPreview();
+  setDlgTitle(); syncNet(false);
+});
 </script>
 </body>
 </html>

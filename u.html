@@ -11,8 +11,10 @@
 <div class="lb" id="root"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/js/config.js"></script>
+<script src="/js/i18n.js"></script>
 <script src="/js/app.js"></script>
 <script>
+// Pagina publica: o idioma segue o do navegador (ou o escolhido antes no site).
 (async () => {
   const m = location.pathname.match(/^\/u\/([^/]+)/);
   const slug = (m ? decodeURIComponent(m[1]) : new URLSearchParams(location.search).get("u") || "").toLowerCase();
@@ -20,7 +22,8 @@
   const { data: page } = slug ? await sb.from("pages").select("*").eq("slug", slug).maybeSingle() : { data: null };
   if (!page) {
     document.body.className = "";
-    root.outerHTML = '<div class="notfound"><div><h1>Pagina nao encontrada</h1><p style="color:var(--mute);margin-bottom:18px">Esse Linkbee nao existe ou foi excluido.</p><a class="btn brand" href="/">Criar o meu Linkbee</a></div></div>';
+    const t = I18N.t;
+    root.outerHTML = `<div class="notfound"><div><h1>${t("nf_h")}</h1><p style="color:var(--mute);margin-bottom:18px">${t("nf_p")}</p><a class="btn brand" href="/">${t("nf_btn")}</a></div></div>`;
     return;
   }
   document.title = (page.title || page.slug) + " | Linkbee";

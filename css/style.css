@@ -215,3 +215,16 @@ dialog{max-height:92vh;max-height:92dvh;overflow-y:auto}
   .lb-title{font-size:22px}
   .lb-link{min-height:56px}
 }
+
+/* Seletor de idioma */
+.lang{display:flex;gap:2px;padding:3px;border-radius:999px;background:#f6f1e3;border:1px solid var(--line)}
+.lang button{border:0;background:none;cursor:pointer;padding:5px 10px;border-radius:999px;font-weight:800;font-size:12px;letter-spacing:.04em;color:var(--mute);transition:.15s}
+.lang button:hover{color:var(--ink)}
+.lang button.on{background:var(--brand);color:var(--ink)}
+.nav .actions,.topbar .right{display:flex;align-items:center;gap:10px}
+@media(max-width:600px){
+  .nav .actions{gap:6px}
+  .lang button{padding:5px 7px;font-size:11px}
+  .topbar .right{gap:6px}
+  .urlpill #urlTxt{display:none}
+}

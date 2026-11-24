@@ -7,53 +7,56 @@
 <title>Conta — Linkbee</title>
 <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
+<body data-title="title_account">
 <header class="topbar">
   <a class="logo" href="/dashboard.html"><img src="/images/logo.svg" alt="Linkbee" class="logo-img"></a>
-  <nav><a href="/dashboard.html">Meu Linkbee</a><a class="on" href="/conta.html">Conta</a></nav>
-  <button class="btn ghost sm" id="logout">Sair</button>
+  <nav><a href="/dashboard.html" data-i18n="nav_my">Meu Linkbee</a><a class="on" href="/conta.html" data-i18n="nav_account">Conta</a></nav>
+  <div class="right">
+    <div class="lang" role="group" data-i18n-aria="lang_aria" aria-label="Idioma"><button type="button" data-lang="pt">PT</button><button type="button" data-lang="es">ES</button><button type="button" data-lang="en">EN</button></div>
+    <button class="btn ghost sm" id="logout" data-i18n="logout">Sair</button>
+  </div>
 </header>
 
 <main style="max-width:640px;margin:auto;padding:28px 4vw">
   <section class="panel">
-    <h2>Minha conta</h2>
-    <div class="kv"><span>E-mail</span><b id="email">...</b></div>
-    <div class="kv"><span>Meu Linkbee</span><b><a id="myUrl" href="#" target="_blank" rel="noopener" style="color:var(--ink);text-decoration:underline">...</a></b></div>
+    <h2 data-i18n="acc_h">Minha conta</h2>
+    <div class="kv"><span data-i18n="acc_email">E-mail</span><b id="email">...</b></div>
+    <div class="kv"><span data-i18n="acc_my">Meu Linkbee</span><b><a id="myUrl" href="#" target="_blank" rel="noopener" style="color:var(--ink);text-decoration:underline">...</a></b></div>
   </section>
 
   <section class="panel" id="slugPanel">
-    <h2>Endereço do Linkbee</h2>
-    <p style="color:var(--mute);margin:4px 0 0;font-size:14px">Ao trocar, o endereço antigo deixa de funcionar e fica livre para outras pessoas.</p>
-    <label for="slugIn">Nome de usuário</label>
+    <h2 data-i18n="slug_h">Endereço do Linkbee</h2>
+    <p data-i18n="slug_note" style="color:var(--mute);margin:4px 0 0;font-size:14px">Ao trocar, o endereço antigo deixa de funcionar e fica livre para outras pessoas.</p>
+    <label for="slugIn" data-i18n="slug_lbl">Nome de usuário</label>
     <div class="claim slug-claim" style="max-width:none;border-radius:12px;padding:4px 4px 4px 14px">
       <span id="slugPrefix"></span>
       <input id="slugIn" type="text" maxlength="30" autocomplete="off" style="padding:8px 4px">
     </div>
-    <button class="btn brand sm" id="saveSlug" style="margin-top:14px">Salvar endereço</button>
+    <button class="btn brand sm" id="saveSlug" style="margin-top:14px" data-i18n="slug_save">Salvar endereço</button>
   </section>
 
   <section class="panel" id="pwPanel">
-    <h2>Alterar senha</h2>
-    <label for="np">Nova senha</label>
+    <h2 data-i18n="pw_h">Alterar senha</h2>
+    <label for="np" data-i18n="lbl_newpass">Nova senha</label>
     <input id="np" type="password" minlength="6" autocomplete="new-password">
-    <button class="btn brand sm" id="changePw" style="margin-top:14px">Atualizar senha</button>
+    <button class="btn brand sm" id="changePw" style="margin-top:14px" data-i18n="pw_btn">Atualizar senha</button>
   </section>
 
   <section class="panel">
-    <h2>Sessao</h2>
-    <p style="color:var(--mute);margin:4px 0 14px">Saia da sua conta neste dispositivo.</p>
-    <button class="btn ghost" id="logout2">Fazer logout</button>
+    <h2 data-i18n="sess_h">Sessão</h2>
+    <p data-i18n="sess_p" style="color:var(--mute);margin:4px 0 14px">Saia da sua conta neste dispositivo.</p>
+    <button class="btn ghost" id="logout2" data-i18n="sess_btn">Fazer logout</button>
   </section>
 
   <section class="panel danger-zone">
-    <h2 style="color:var(--danger)">Zona de perigo</h2>
+    <h2 style="color:var(--danger)" data-i18n="danger_h">Zona de perigo</h2>
     <div class="row">
-      <div><b>Excluir meu Linkbee</b><p style="color:var(--mute);font-size:14px">Apaga sua pagina e todos os links. Sua conta continua existindo.</p></div>
-      <button class="btn danger sm" id="delPage">Excluir Linkbee</button>
+      <div><b data-i18n="del_page_b">Excluir meu Linkbee</b><p data-i18n="del_page_p" style="color:var(--mute);font-size:14px">Apaga sua página e todos os links. Sua conta continua existindo.</p></div>
+      <button class="btn danger sm" id="delPage" data-i18n="del_page_btn">Excluir Linkbee</button>
     </div>
     <div class="row">
-      <div><b>Excluir conta permanentemente</b><p style="color:var(--mute);font-size:14px">Apaga sua conta, seu Linkbee e todos os dados. Nao pode ser desfeito.</p></div>
-      <button class="btn danger sm" id="delAcc">Excluir conta</button>
+      <div><b data-i18n="del_acc_b">Excluir conta permanentemente</b><p data-i18n="del_acc_p" style="color:var(--mute);font-size:14px">Apaga sua conta, seu Linkbee e todos os dados. Não pode ser desfeito.</p></div>
+      <button class="btn danger sm" id="delAcc" data-i18n="del_acc_btn">Excluir conta</button>
     </div>
   </section>
 </main>
@@ -62,21 +65,23 @@
   <div class="dlg">
     <h2 id="cTitle"></h2>
     <p id="cText" style="color:var(--mute);margin:8px 0"></p>
-    <label>Digite <b>EXCLUIR</b> para confirmar</label>
+    <label data-i18n-html="confirm_lbl">Digite <b>EXCLUIR</b> para confirmar</label>
     <input id="cInput" type="text" autocomplete="off">
     <div style="display:flex;gap:10px;margin-top:18px">
-      <button class="btn ghost block" id="cNo">Cancelar</button>
-      <button class="btn danger block" id="cYes" disabled>Excluir</button>
+      <button class="btn ghost block" id="cNo" data-i18n="cancel">Cancelar</button>
+      <button class="btn danger block" id="cYes" disabled data-i18n="delete">Excluir</button>
     </div>
   </div>
 </dialog>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/js/config.js"></script>
+<script src="/js/i18n.js"></script>
 <script src="/js/app.js"></script>
 <script>
+const t = I18N.t;
 const $ = (id) => document.getElementById(id);
-let onConfirm = null;
+let onConfirm = null, askKeys = null, hasPage = false;
 
 (async () => {
   const { data } = await sb.auth.getSession();
@@ -88,52 +93,66 @@ let onConfirm = null;
   if (!providers.includes("email")) $("pwPanel").classList.add("hidden");
   const { data: p } = await sb.from("pages").select("slug").eq("user_id", user.id).maybeSingle();
   $("slugPrefix").textContent = location.host + "/u/";
-  if (p) { currentSlug = p.slug; showSlug(); $("slugIn").value = p.slug; }
-  else { $("myUrl").textContent = "Nenhum (voce excluiu)"; $("delPage").disabled = true; $("slugPanel").classList.add("hidden"); }
+  if (p) { hasPage = true; currentSlug = p.slug; showSlug(); $("slugIn").value = p.slug; }
+  else { showSlug(); $("delPage").disabled = true; $("slugPanel").classList.add("hidden"); }
 })();
 
 let currentSlug = null;
-function showSlug() { $("myUrl").textContent = publicUrl(currentSlug).replace(/^https?:\/\//, ""); $("myUrl").href = publicUrl(currentSlug); }
+function showSlug() {
+  if (!currentSlug) { $("myUrl").textContent = t("acc_none"); $("myUrl").removeAttribute("href"); return; }
+  $("myUrl").textContent = publicUrl(currentSlug).replace(/^https?:\/\//, ""); $("myUrl").href = publicUrl(currentSlug);
+}
 
 $("saveSlug").onclick = async () => {
   const s = $("slugIn").value.trim().toLowerCase();
-  if (s === currentSlug) return toast("Esse já é o seu endereço.");
-  if (!/^[a-z0-9_.-]{3,30}$/.test(s)) return toast("Use de 3 a 30 caracteres: letras, números, _ . -", "err");
+  if (s === currentSlug) return toast(t("slug_same"));
+  if (!/^[a-z0-9_.-]{3,30}$/.test(s)) return toast(t("err_slug_fmt"), "err");
   $("saveSlug").disabled = true;
   const { error } = await sb.from("pages").update({ slug: s }).eq("slug", currentSlug);
   $("saveSlug").disabled = false;
-  if (error) return toast(error.code === "23505" ? "Esse endereço já está em uso." : error.message, "err");
-  currentSlug = s; $("slugIn").value = s; showSlug(); toast("Endereço atualizado!");
+  if (error) return toast(error.code === "23505" ? t("err_slug_taken") : error.message, "err");
+  currentSlug = s; $("slugIn").value = s; showSlug(); toast(t("slug_updated"));
 };
 
 async function logout() { await sb.auth.signOut(); location.href = "/"; }
 $("logout").onclick = logout; $("logout2").onclick = logout;
 
 $("changePw").onclick = async () => {
-  if ($("np").value.length < 6) return toast("A senha precisa ter ao menos 6 caracteres.", "err");
+  if ($("np").value.length < 6) return toast(t("err_pass_short"), "err");
   const { error } = await sb.auth.updateUser({ password: $("np").value });
   if (error) return toast(error.message, "err");
-  $("np").value = ""; toast("Senha atualizada!");
+  $("np").value = ""; toast(t("pw_updated"));
 };
 
-function ask(title, text, fn) {
-  $("cTitle").textContent = title; $("cText").textContent = text; $("cInput").value = ""; $("cYes").disabled = true;
+// Confirmacao de exclusao: a palavra a digitar muda com o idioma (EXCLUIR / ELIMINAR / DELETE)
+function ask(titleKey, textKey, fn) {
+  askKeys = [titleKey, textKey];
+  $("cTitle").textContent = t(titleKey); $("cText").textContent = t(textKey);
+  $("cInput").value = ""; $("cYes").disabled = true;
   onConfirm = fn; $("confirmDlg").showModal();
 }
-$("cInput").oninput = () => ($("cYes").disabled = $("cInput").value.trim().toUpperCase() !== "EXCLUIR");
+$("cInput").oninput = () => ($("cYes").disabled = $("cInput").value.trim().toUpperCase() !== t("confirm_word"));
 $("cNo").onclick = () => $("confirmDlg").close();
 $("cYes").onclick = async () => { $("cYes").disabled = true; await onConfirm(); };
 
-$("delPage").onclick = () => ask("Excluir seu Linkbee?", "Sua pagina e todos os links serao apagados.", async () => {
+$("delPage").onclick = () => ask("del_page_title", "del_page_text", async () => {
   const { error } = await sb.rpc("delete_my_page");
   if (error) { toast(error.message, "err"); return $("confirmDlg").close(); }
-  toast("Linkbee excluido."); setTimeout(() => (location.href = "/dashboard.html"), 900);
+  toast(t("page_deleted")); setTimeout(() => (location.href = "/dashboard.html"), 900);
 });
-$("delAcc").onclick = () => ask("Excluir sua conta?", "Isso apaga tudo permanentemente e nao pode ser desfeito.", async () => {
+$("delAcc").onclick = () => ask("del_acc_title", "del_acc_text", async () => {
   const { error } = await sb.rpc("delete_my_account");
   if (error) { toast(error.message, "err"); return $("confirmDlg").close(); }
   await sb.auth.signOut().catch(() => {});
   location.href = "/?conta=excluida";
+});
+
+I18N.aoMudar(() => {
+  showSlug();
+  if (askKeys && $("confirmDlg").open) {
+    $("cTitle").textContent = t(askKeys[0]); $("cText").textContent = t(askKeys[1]);
+    $("cYes").disabled = $("cInput").value.trim().toUpperCase() !== t("confirm_word");
+  }
 });
 </script>
 </body>

@@ -24,10 +24,36 @@ async function sha256(s: string) {
 
 const EXPIRES_MIN = 10;
 const MAX_ATTEMPTS = 5;
-const INVALID = "Código inválido ou expirado.";
+const INVALID = "invalid_code"; // codigos de erro: o site traduz para PT/ES/EN
 
-async function sendMail(to: string, code: string) {
+type Lang = "pt" | "es" | "en";
+const MAIL: Record<Lang, { subject: string; h: string; p: string; note: string; text: string }> = {
+  pt: {
+    subject: "Seu código de recuperação do Linkbee",
+    h: "Recuperação de senha",
+    p: "Use o código abaixo para criar uma nova senha no Linkbee:",
+    note: `O código vale por ${EXPIRES_MIN} minutos. Se você não pediu isso, ignore este e-mail.`,
+    text: "Seu código de recuperação é {code}. Ele vale por " + EXPIRES_MIN + " minutos. Se você não pediu, ignore este e-mail.",
+  },
+  es: {
+    subject: "Tu código de recuperación de Linkbee",
+    h: "Recuperación de contraseña",
+    p: "Usa el siguiente código para crear una nueva contraseña en Linkbee:",
+    note: `El código vale por ${EXPIRES_MIN} minutos. Si no lo pediste, ignora este correo.`,
+    text: "Tu código de recuperación es {code}. Vale por " + EXPIRES_MIN + " minutos. Si no lo pediste, ignora este correo.",
+  },
+  en: {
+    subject: "Your Linkbee recovery code",
+    h: "Password recovery",
+    p: "Use the code below to create a new password on Linkbee:",
+    note: `The code is valid for ${EXPIRES_MIN} minutes. If you didn't request this, ignore this email.`,
+    text: "Your recovery code is {code}. It is valid for " + EXPIRES_MIN + " minutes. If you didn't request it, ignore this email.",
+  },
+};
+
+async function sendMail(to: string, code: string, lang: Lang) {
   const user = Deno.env.get("GMAIL_USER")!;
+  const m = MAIL[lang];
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
@@ -37,17 +63,17 @@ async function sendMail(to: string, code: string) {
   await transporter.sendMail({
     from: `Linkbee <${user}>`,
     to,
-    subject: "Seu código de recuperação do Linkbee",
-    text: `Seu código de recuperação é ${code}. Ele vale por ${EXPIRES_MIN} minutos. Se você não pediu, ignore este e-mail.`,
+    subject: m.subject,
+    text: m.text.replace("{code}", code),
     html: `<div style="font-family:Arial,sans-serif;max-width:420px;margin:auto;padding:24px;border:1px solid #ece5d3;border-radius:16px">
-      <h2 style="margin:0 0 8px;color:#120c01">Recuperação de senha</h2>
-      <p style="color:#6f6652">Use o código abaixo para criar uma nova senha no Linkbee:</p>
+      <h2 style="margin:0 0 8px;color:#120c01">${m.h}</h2>
+      <p style="color:#6f6652">${m.p}</p>
       <p style="font-size:34px;letter-spacing:8px;font-weight:800;background:#fdc603;color:#120c01;text-align:center;border-radius:12px;padding:14px;margin:18px 0">${code}</p>
-      <p style="color:#6f6652;font-size:13px">O código vale por ${EXPIRES_MIN} minutos. Se você não pediu isso, ignore este e-mail.</p></div>`,
+      <p style="color:#6f6652;font-size:13px">${m.note}</p></div>`,
   });
 }
 
-async function requestCode(email: string) {
+async function requestCode(email: string, lang: Lang) {
   const { data: rows, error: rpcError } = await admin.rpc("user_for_reset", { p_email: email });
   if (rpcError) { console.error("[reset] rpc user_for_reset falhou (rodou a migration?):", rpcError.message); return; }
   const u = rows?.[0];
@@ -71,11 +97,11 @@ async function requestCode(email: string) {
     expires_at: new Date(now + EXPIRES_MIN * 60_000).toISOString(),
   });
   if (error) { console.error("insert reset", error); return; }
-  try { await sendMail(email, code); console.log("[reset] e-mail enviado"); } catch (e) { console.error("[reset] sendMail falhou:", e); }
+  try { await sendMail(email, code, lang); console.log("[reset] e-mail enviado"); } catch (e) { console.error("[reset] sendMail falhou:", e); }
 }
 
 async function confirmCode(email: string, code: string, password: string) {
-  if (password.length < 6) return json({ error: "A senha precisa ter ao menos 6 caracteres." }, 400);
+  if (password.length < 6) return json({ error: "short_password" }, 400);
   const { data: rows } = await admin.rpc("user_for_reset", { p_email: email });
   const u = rows?.[0];
   if (!u) return json({ error: INVALID }, 400);
@@ -90,27 +116,28 @@ async function confirmCode(email: string, code: string, password: string) {
 
   await admin.from("password_resets").update({ used: true }).eq("id", r.id);
   const { error } = await admin.auth.admin.updateUserById(u.id, { password });
-  if (error) return json({ error: error.message }, 400);
+  if (error) { console.error("[reset] updateUser:", error.message); return json({ error: "internal" }, 400); }
   return json({ ok: true });
 }
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
-  if (req.method !== "POST") return json({ error: "Método não permitido." }, 405);
+  if (req.method !== "POST") return json({ error: "method" }, 405);
   try {
     const body = await req.json();
     const email = String(body.email || "").trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "E-mail inválido." }, 400);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "invalid_email" }, 400);
+    const lang: Lang = ["pt", "es", "en"].includes(body.lang) ? body.lang : "pt";
     if (body.action === "request") {
-      await requestCode(email);
+      await requestCode(email, lang);
       return json({ ok: true });
     }
     if (body.action === "confirm") {
       return await confirmCode(email, String(body.code || "").trim(), String(body.password || ""));
     }
-    return json({ error: "Ação inválida." }, 400);
+    return json({ error: "invalid_action" }, 400);
   } catch (e) {
     console.error(e);
-    return json({ error: "Erro ao processar o pedido." }, 500);
+    return json({ error: "internal" }, 500);
   }
 });
