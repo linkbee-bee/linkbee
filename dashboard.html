@@ -78,11 +78,13 @@
     <div class="profile-row">
       <div class="avatar-pick" id="iconBox" style="width:60px;height:60px;font-size:22px;border-radius:14px"></div>
       <div>
-        <button class="btn soft sm" id="iconBtn" type="button">Imagem do link</button>
+        <button class="btn soft sm" id="iconBtn" type="button">Adicionar imagem</button>
         <button class="btn ghost sm hidden" id="iconRm" type="button">Remover</button>
         <input type="file" id="iconFile" accept="image/*" class="hidden">
       </div>
     </div>
+    <label>Ou escolha um ícone</label>
+    <div class="icon-presets" id="iconPresets"></div>
     <label for="lTitle">Titulo</label>
     <input id="lTitle" type="text" maxlength="80" required>
     <label for="lSub">Subtitulo (opcional)</label>
@@ -180,7 +182,7 @@ function drawLinks() {
   if (!links.length) { box.innerHTML = '<p class="empty">Nenhum link ainda. Clique em "Adicionar link".</p>'; return; }
   box.innerHTML = links.map((l, i) => `
     <div class="linkcard" data-id="${l.id}">
-      <div class="ico">${l.icon_url ? `<img src="${esc(l.icon_url)}" alt="">` : esc(l.title.charAt(0).toUpperCase())}</div>
+      <div class="ico">${linkIconHtml(l.icon_url, "ico-in") || esc(l.title.charAt(0).toUpperCase())}</div>
       <div class="info"><b>${esc(l.title)}</b><small>${esc(l.url)}</small></div>
       <button class="iconbtn" data-act="up" ${i === 0 ? "disabled" : ""} title="Subir">&uarr;</button>
       <button class="iconbtn" data-act="down" ${i === links.length - 1 ? "disabled" : ""} title="Descer">&darr;</button>
@@ -243,9 +245,16 @@ $("copyBtn").onclick = async () => { await navigator.clipboard.writeText(publicU
 
 // Dialogo de link
 function drawIcon() {
-  $("iconBox").innerHTML = editIcon ? `<img src="${esc(editIcon)}" alt="">` : "&#128279;";
+  $("iconBox").innerHTML = editIcon ? linkIconHtml(editIcon, "ico-in") : "&#128279;";
   $("iconRm").classList.toggle("hidden", !editIcon);
+  document.querySelectorAll("#iconPresets button").forEach((b) => b.classList.toggle("on", editIcon === "preset:" + b.dataset.p));
 }
+$("iconPresets").innerHTML = Object.entries(LINK_ICONS).map(([k, v]) =>
+  `<button type="button" data-p="${k}" title="${v.label}">${linkIconHtml("preset:" + k, "ico-in")}</button>`).join("");
+$("iconPresets").addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-p]"); if (!b) return;
+  editIcon = "preset:" + b.dataset.p; drawIcon();
+});
 function openLinkDlg(l) {
   editing = l || null; editIcon = l?.icon_url || null;
   $("linkDlgTitle").textContent = l ? "Editar link" : "Novo link";
@@ -260,7 +269,7 @@ $("iconFile").onchange = async (e) => {
   const f = e.target.files[0]; if (!f) return;
   try { $("iconBtn").textContent = "Enviando..."; editIcon = await uploadImage(f); drawIcon(); }
   catch (err) { toast(err.message, "err"); }
-  $("iconBtn").textContent = "Imagem do link"; e.target.value = "";
+  $("iconBtn").textContent = "Adicionar imagem"; e.target.value = "";
 };
 $("linkForm").onsubmit = async (e) => {
   e.preventDefault();

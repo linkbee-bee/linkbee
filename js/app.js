@@ -62,6 +62,25 @@ function socialHref(key, val) {
   return safeUrl(val);
 }
 
+ICONS.linkedin = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.5 8.7H3.3V20h3.2V8.7zM4.9 3.8a1.9 1.9 0 1 0 0 3.8 1.9 1.9 0 0 0 0-3.8zM20.7 13.3c0-3-1.6-4.9-4.2-4.9-1.4 0-2.4.7-2.9 1.5V8.7h-3.1V20h3.2v-6.1c0-1.6.8-2.6 2-2.6s1.8.9 1.8 2.5V20h3.2v-6.7z"/></svg>';
+const LINK_ICONS = {
+  instagram: { label: "Instagram", bg: "linear-gradient(45deg,#f09433,#dc2743,#bc1888)" },
+  tiktok: { label: "TikTok", bg: "#000000" },
+  whatsapp: { label: "WhatsApp", bg: "#25D366" },
+  linkedin: { label: "LinkedIn", bg: "#0A66C2" },
+  youtube: { label: "YouTube", bg: "#FF0000" },
+};
+// icon_url pode ser uma URL de imagem ou "preset:<nome>"
+function linkIconHtml(iconUrl, cls) {
+  if (!iconUrl) return "";
+  const m = /^preset:(\w+)$/.exec(iconUrl);
+  if (m) {
+    const p = LINK_ICONS[m[1]];
+    return p ? `<span class="${cls} lb-ico-preset" style="background:${p.bg};color:#fff">${ICONS[m[1]]}</span>` : "";
+  }
+  return `<img class="${cls}" src="${esc(iconUrl)}" alt="">`;
+}
+
 const DEFAULT_THEME = { bg: "#120c01", useGradient: false, bg2: "#2a1d04", title: "#fdc603", text: "#f7dd9d", btn: "#f7dd9d", btnText: "#120c01", shape: "pill" };
 const THEME_PRESETS = {
   "Escuro": DEFAULT_THEME,
@@ -102,9 +121,8 @@ function renderPage(el, page, links) {
     return h ? `<a class="lb-social" href="${esc(h)}" target="_blank" rel="noopener noreferrer" aria-label="${k}">${ICONS[k]}</a>` : "";
   }).join("");
   const items = (links || []).filter((l) => l.active !== false).map((l) => {
-    const icon = l.icon_url
-      ? `<img class="lb-ico" src="${esc(l.icon_url)}" alt="">`
-      : `<span class="lb-ico lb-ico-ph">${esc((l.title || "?").charAt(0).toUpperCase())}</span>`;
+    const icon = linkIconHtml(l.icon_url, "lb-ico")
+      || `<span class="lb-ico lb-ico-ph">${esc((l.title || "?").charAt(0).toUpperCase())}</span>`;
     return `<a class="lb-link" href="${esc(safeUrl(l.url))}" target="_blank" rel="noopener noreferrer">
       ${icon}<span class="lb-text"><b>${esc(l.title)}</b>${l.subtitle ? `<small>${esc(l.subtitle)}</small>` : ""}</span></a>`;
   }).join("");

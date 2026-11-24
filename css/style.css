@@ -145,3 +145,13 @@ body.public .lb{min-height:100vh}
 .presets{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
 .preset{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;font-weight:700;font-size:13px;cursor:pointer}
 .preset:hover{border-color:var(--ink)}
+
+/* Icones de link prontos */
+.lb-ico-preset{display:grid;place-items:center}
+.lb-ico-preset svg{width:55%;height:55%}
+.ico .ico-in.lb-ico-preset{width:100%;height:100%}
+.icon-presets{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.icon-presets button{width:46px;height:46px;padding:0;border:2px solid transparent;border-radius:12px;background:none;cursor:pointer;overflow:hidden;box-shadow:0 0 0 1.5px var(--line)}
+.icon-presets button.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--brand)}
+.icon-presets .ico-in{width:100%;height:100%;border-radius:0}
+.avatar-pick .ico-in{width:100%;height:100%;object-fit:cover}

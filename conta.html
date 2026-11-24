@@ -21,6 +21,17 @@
     <div class="kv"><span>Meu Linkbee</span><b><a id="myUrl" href="#" target="_blank" rel="noopener" style="color:var(--ink);text-decoration:underline">...</a></b></div>
   </section>
 
+  <section class="panel" id="slugPanel">
+    <h2>Endereço do Linkbee</h2>
+    <p style="color:var(--mute);margin:4px 0 0;font-size:14px">Ao trocar, o endereço antigo deixa de funcionar e fica livre para outras pessoas.</p>
+    <label for="slugIn">Nome de usuário</label>
+    <div class="claim" style="max-width:none;border-radius:12px;padding:4px 4px 4px 14px">
+      <span id="slugPrefix"></span>
+      <input id="slugIn" type="text" maxlength="30" autocomplete="off" style="padding:8px 4px">
+    </div>
+    <button class="btn brand sm" id="saveSlug" style="margin-top:14px">Salvar endereço</button>
+  </section>
+
   <section class="panel">
     <h2>Alterar senha</h2>
     <label for="np">Nova senha</label>
@@ -73,9 +84,24 @@ let onConfirm = null;
   const user = data.session.user;
   $("email").textContent = user.email;
   const { data: p } = await sb.from("pages").select("slug").eq("user_id", user.id).maybeSingle();
-  if (p) { $("myUrl").textContent = publicUrl(p.slug).replace(/^https?:\/\//, ""); $("myUrl").href = publicUrl(p.slug); }
-  else { $("myUrl").textContent = "Nenhum (voce excluiu)"; $("delPage").disabled = true; }
+  $("slugPrefix").textContent = location.host + "/u/";
+  if (p) { currentSlug = p.slug; showSlug(); $("slugIn").value = p.slug; }
+  else { $("myUrl").textContent = "Nenhum (voce excluiu)"; $("delPage").disabled = true; $("slugPanel").classList.add("hidden"); }
 })();
+
+let currentSlug = null;
+function showSlug() { $("myUrl").textContent = publicUrl(currentSlug).replace(/^https?:\/\//, ""); $("myUrl").href = publicUrl(currentSlug); }
+
+$("saveSlug").onclick = async () => {
+  const s = $("slugIn").value.trim().toLowerCase();
+  if (s === currentSlug) return toast("Esse já é o seu endereço.");
+  if (!/^[a-z0-9_.-]{3,30}$/.test(s)) return toast("Use de 3 a 30 caracteres: letras, números, _ . -", "err");
+  $("saveSlug").disabled = true;
+  const { error } = await sb.from("pages").update({ slug: s }).eq("slug", currentSlug);
+  $("saveSlug").disabled = false;
+  if (error) return toast(error.code === "23505" ? "Esse endereço já está em uso." : error.message, "err");
+  currentSlug = s; $("slugIn").value = s; showSlug(); toast("Endereço atualizado!");
+};
 
 async function logout() { await sb.auth.signOut(); location.href = "/"; }
 $("logout").onclick = logout; $("logout2").onclick = logout;
