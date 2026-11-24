@@ -48,9 +48,12 @@ async function sendMail(to: string, code: string) {
 }
 
 async function requestCode(email: string) {
-  const { data: rows } = await admin.rpc("user_for_reset", { p_email: email });
+  const { data: rows, error: rpcError } = await admin.rpc("user_for_reset", { p_email: email });
+  if (rpcError) { console.error("[reset] rpc user_for_reset falhou (rodou a migration?):", rpcError.message); return; }
   const u = rows?.[0];
-  if (!u || !u.has_password) return; // nao revela se a conta existe
+  // Motivos abaixo aparecem so nos Logs; o usuario recebe sempre a mesma resposta.
+  if (!u) { console.log("[reset] nenhuma conta com esse e-mail"); return; }
+  if (!u.has_password) { console.log("[reset] conta so-Google, sem senha: nao envia"); return; }
 
   const now = Date.now();
   const recent = async (ms: number) => {
@@ -68,7 +71,7 @@ async function requestCode(email: string) {
     expires_at: new Date(now + EXPIRES_MIN * 60_000).toISOString(),
   });
   if (error) { console.error("insert reset", error); return; }
-  try { await sendMail(email, code); } catch (e) { console.error("sendMail", e); }
+  try { await sendMail(email, code); console.log("[reset] e-mail enviado"); } catch (e) { console.error("[reset] sendMail falhou:", e); }
 }
 
 async function confirmCode(email: string, code: string, password: string) {

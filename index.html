@@ -87,6 +87,7 @@
       <h2 style="margin:18px 0 4px">Recuperar senha</h2>
       <div id="rStep1">
         <p style="color:var(--mute);font-size:14px">Enviaremos um código de 6 dígitos para o seu e-mail.</p>
+        <p style="background:var(--tint);border-radius:12px;padding:10px 12px;font-size:13px;margin-top:10px">Criou sua conta com o Google? Então você não tem senha: é só voltar e clicar em <b>Continuar com Google</b>.</p>
         <label for="rEmail">E-mail</label>
         <input id="rEmail" type="email" required autocomplete="email">
       </div>
@@ -165,7 +166,7 @@ authForm.addEventListener("submit", async (e) => {
     }
   } catch (err) {
     const m = err.message || "Erro inesperado.";
-    showMsg(/Invalid login/i.test(m) ? "E-mail ou senha incorretos." : m);
+    showMsg(/Invalid login/i.test(m) ? "E-mail ou senha incorretos. Se você criou a conta com o Google, use o botão Continuar com Google." : m);
   } finally { authBtn.disabled = false; }
 });
 

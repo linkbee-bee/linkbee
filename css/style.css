@@ -127,7 +127,7 @@ body.public .lb{min-height:100vh}
 
 @media(max-width:900px){
   .hero{grid-template-columns:1fr;padding-top:30px}.grid3{grid-template-columns:1fr}
-  .workspace{grid-template-columns:1fr}.preview-wrap{position:static;order:-1}
+  .workspace{grid-template-columns:1fr}.preview-wrap{display:none}
   .phone{height:560px}
 }
 
@@ -156,3 +156,62 @@ body.public .lb{min-height:100vh}
 .icon-presets .ico-in{width:100%;height:100%;border-radius:0}
 .avatar-pick .ico-in{width:100%;height:100%;object-fit:cover}
 select{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:11px 14px;background:#fff;outline:none}select:focus{border-color:var(--brand)}
+
+/* ===== Responsivo / mobile ===== */
+html,body{overflow-x:hidden}
+.fab,.preview-close{display:none}
+dialog{max-height:92vh;max-height:92dvh;overflow-y:auto}
+.lb{min-height:100dvh}
+.phone .lb{min-height:100%}
+
+@media(max-width:900px){
+  .fab{display:flex;position:fixed;right:16px;bottom:18px;z-index:15;align-items:center;gap:8px;border:0;border-radius:999px;padding:14px 20px;font-weight:800;background:var(--ink);color:#fff;box-shadow:0 8px 24px rgba(18,12,1,.35);cursor:pointer}
+  .preview-wrap.open{display:flex;position:fixed;inset:0;z-index:30;background:rgba(18,12,1,.78);align-items:center;justify-content:center;padding:16px}
+  .preview-wrap.open .phone{height:min(640px,86dvh);width:min(320px,86vw);margin:0}
+  .preview-close{display:grid;place-items:center;position:absolute;top:14px;right:14px;width:42px;height:42px;border:0;border-radius:50%;background:#fff;color:var(--ink);font-size:26px;line-height:1;cursor:pointer;z-index:2}
+  body.has-fab{padding-bottom:84px}
+}
+
+@media(max-width:600px){
+  input[type=text],input[type=email],input[type=password],input[type=url],textarea,select{font-size:16px}
+  .nav{padding:10px 4vw}
+  .logo-img{height:44px}
+  .nav .actions{gap:6px}
+  .nav .btn.sm{padding:8px 12px;font-size:13px}
+  .hero{padding:16px 5vw 40px;gap:24px}
+  .hero p{font-size:16px;margin:14px 0 20px}
+  .claim{flex-direction:column;align-items:stretch;border-radius:20px;padding:12px 14px;gap:6px;max-width:none}
+  .claim input{padding:6px 0;border-bottom:1px solid var(--line)}
+  .claim .btn{width:100%}
+  .section{padding:40px 5vw}
+  .section .sub{margin-bottom:24px}
+  .card{padding:20px}
+  .cta{margin:20px 4vw 40px;padding:40px 18px;border-radius:24px}
+  .dlg{padding:20px}
+  dialog{width:94%;border-radius:20px}
+  .topbar{padding:8px 4vw;gap:8px}
+  .topbar .logo-img{height:38px}
+  .topbar nav{order:3;width:100%;justify-content:center}
+  .topbar nav a{flex:1;text-align:center;padding:8px 10px}
+  .urlpill{font-size:12px;padding:4px 4px 4px 10px;max-width:60vw}
+  .urlpill #urlTxt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .workspace{padding:16px 4vw;gap:16px}
+  .panel{padding:16px;border-radius:16px}
+  .two,.theme-grid{grid-template-columns:1fr}
+  .profile-row{gap:12px}
+  .shapes{gap:6px}.shapes b{font-size:12px;padding:10px 2px}
+  .linkcard{flex-wrap:wrap;gap:8px}
+  .linkcard .info{flex:1 1 calc(100% - 64px)}
+  .linkcard .iconbtn{width:40px;height:40px}
+  .linkcard .switch{margin-left:auto}
+  .danger-zone .row .btn{width:100%}
+  .kv{flex-direction:column;gap:2px}
+  .slug-claim{flex-direction:column;align-items:stretch;border-radius:12px;padding:10px 12px!important}
+  .slug-claim span{font-size:12px;word-break:break-all}
+  .slug-claim input{border-bottom:1px solid var(--line)!important}
+  #toast{width:calc(100% - 32px);text-align:center}
+  .lb{padding:44px 16px 24px}
+  .lb-avatar{width:84px;height:84px}
+  .lb-title{font-size:22px}
+  .lb-link{min-height:56px}
+}

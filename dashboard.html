@@ -67,8 +67,10 @@
   </div>
 
   <aside class="preview-wrap">
+    <button class="preview-close" id="previewClose" type="button" aria-label="Fechar prévia">&times;</button>
     <div class="phone"><div class="screen"><div class="lb" id="preview"></div></div></div>
   </aside>
+  <button class="fab" id="previewFab" type="button">&#128241; Ver prévia</button>
 </main>
 
 <dialog id="linkDlg">
@@ -220,6 +222,13 @@ $("linkList").addEventListener("change", async (e) => {
   const { error } = await sb.from("links").update({ active: l.active }).eq("id", l.id);
   if (error) toast(error.message, "err");
 });
+
+// Previa em tela cheia no celular
+document.body.classList.add("has-fab");
+const previewWrap = document.querySelector(".preview-wrap");
+$("previewFab").onclick = () => previewWrap.classList.add("open");
+$("previewClose").onclick = () => previewWrap.classList.remove("open");
+previewWrap.addEventListener("click", (e) => { if (e.target === previewWrap) previewWrap.classList.remove("open"); });
 
 // Perfil
 $("avatarBtn").onclick = () => $("avatarFile").click();
