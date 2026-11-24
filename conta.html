@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="/images/logo.svg" type="image/svg+xml">
+<title>Conta — Linkbee</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="logo" href="/dashboard.html"><img src="/images/logo.svg" alt="Linkbee" class="logo-img"></a>
+  <nav><a href="/dashboard.html">Meu Linkbee</a><a class="on" href="/conta.html">Conta</a></nav>
+  <button class="btn ghost sm" id="logout">Sair</button>
+</header>
+
+<main style="max-width:640px;margin:auto;padding:28px 4vw">
+  <section class="panel">
+    <h2>Minha conta</h2>
+    <div class="kv"><span>E-mail</span><b id="email">...</b></div>
+    <div class="kv"><span>Meu Linkbee</span><b><a id="myUrl" href="#" target="_blank" rel="noopener" style="color:var(--ink);text-decoration:underline">...</a></b></div>
+  </section>
+
+  <section class="panel">
+    <h2>Alterar senha</h2>
+    <label for="np">Nova senha</label>
+    <input id="np" type="password" minlength="6" autocomplete="new-password">
+    <button class="btn brand sm" id="changePw" style="margin-top:14px">Atualizar senha</button>
+  </section>
+
+  <section class="panel">
+    <h2>Sessao</h2>
+    <p style="color:var(--mute);margin:4px 0 14px">Saia da sua conta neste dispositivo.</p>
+    <button class="btn ghost" id="logout2">Fazer logout</button>
+  </section>
+
+  <section class="panel danger-zone">
+    <h2 style="color:var(--danger)">Zona de perigo</h2>
+    <div class="row">
+      <div><b>Excluir meu Linkbee</b><p style="color:var(--mute);font-size:14px">Apaga sua pagina e todos os links. Sua conta continua existindo.</p></div>
+      <button class="btn danger sm" id="delPage">Excluir Linkbee</button>
+    </div>
+    <div class="row">
+      <div><b>Excluir conta permanentemente</b><p style="color:var(--mute);font-size:14px">Apaga sua conta, seu Linkbee e todos os dados. Nao pode ser desfeito.</p></div>
+      <button class="btn danger sm" id="delAcc">Excluir conta</button>
+    </div>
+  </section>
+</main>
+
+<dialog id="confirmDlg">
+  <div class="dlg">
+    <h2 id="cTitle"></h2>
+    <p id="cText" style="color:var(--mute);margin:8px 0"></p>
+    <label>Digite <b>EXCLUIR</b> para confirmar</label>
+    <input id="cInput" type="text" autocomplete="off">
+    <div style="display:flex;gap:10px;margin-top:18px">
+      <button class="btn ghost block" id="cNo">Cancelar</button>
+      <button class="btn danger block" id="cYes" disabled>Excluir</button>
+    </div>
+  </div>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/config.js"></script>
+<script src="/js/app.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+let onConfirm = null;
+
+(async () => {
+  const { data } = await sb.auth.getSession();
+  if (!data.session) return (location.href = "/");
+  const user = data.session.user;
+  $("email").textContent = user.email;
+  const { data: p } = await sb.from("pages").select("slug").eq("user_id", user.id).maybeSingle();
+  if (p) { $("myUrl").textContent = publicUrl(p.slug).replace(/^https?:\/\//, ""); $("myUrl").href = publicUrl(p.slug); }
+  else { $("myUrl").textContent = "Nenhum (voce excluiu)"; $("delPage").disabled = true; }
+})();
+
+async function logout() { await sb.auth.signOut(); location.href = "/"; }
+$("logout").onclick = logout; $("logout2").onclick = logout;
+
+$("changePw").onclick = async () => {
+  if ($("np").value.length < 6) return toast("A senha precisa ter ao menos 6 caracteres.", "err");
+  const { error } = await sb.auth.updateUser({ password: $("np").value });
+  if (error) return toast(error.message, "err");
+  $("np").value = ""; toast("Senha atualizada!");
+};
+
+function ask(title, text, fn) {
+  $("cTitle").textContent = title; $("cText").textContent = text; $("cInput").value = ""; $("cYes").disabled = true;
+  onConfirm = fn; $("confirmDlg").showModal();
+}
+$("cInput").oninput = () => ($("cYes").disabled = $("cInput").value.trim().toUpperCase() !== "EXCLUIR");
+$("cNo").onclick = () => $("confirmDlg").close();
+$("cYes").onclick = async () => { $("cYes").disabled = true; await onConfirm(); };
+
+$("delPage").onclick = () => ask("Excluir seu Linkbee?", "Sua pagina e todos os links serao apagados.", async () => {
+  const { error } = await sb.rpc("delete_my_page");
+  if (error) { toast(error.message, "err"); return $("confirmDlg").close(); }
+  toast("Linkbee excluido."); setTimeout(() => (location.href = "/dashboard.html"), 900);
+});
+$("delAcc").onclick = () => ask("Excluir sua conta?", "Isso apaga tudo permanentemente e nao pode ser desfeito.", async () => {
+  const { error } = await sb.rpc("delete_my_account");
+  if (error) { toast(error.message, "err"); return $("confirmDlg").close(); }
+  await sb.auth.signOut().catch(() => {});
+  location.href = "/?conta=excluida";
+});
+</script>
+</body>
+</html>

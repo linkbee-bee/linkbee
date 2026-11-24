@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="/images/logo.svg" type="image/svg+xml">
+<title>Linkbee</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="public">
+<div class="lb" id="root"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/config.js"></script>
+<script src="/js/app.js"></script>
+<script>
+(async () => {
+  const m = location.pathname.match(/^\/u\/([^/]+)/);
+  const slug = (m ? decodeURIComponent(m[1]) : new URLSearchParams(location.search).get("u") || "").toLowerCase();
+  const root = document.getElementById("root");
+  const { data: page } = slug ? await sb.from("pages").select("*").eq("slug", slug).maybeSingle() : { data: null };
+  if (!page) {
+    document.body.className = "";
+    root.outerHTML = '<div class="notfound"><div><h1>Pagina nao encontrada</h1><p style="color:var(--mute);margin-bottom:18px">Esse Linkbee nao existe ou foi excluido.</p><a class="btn brand" href="/">Criar o meu Linkbee</a></div></div>';
+    return;
+  }
+  document.title = (page.title || page.slug) + " | Linkbee";
+  const { data: links } = await sb.from("links").select("*").eq("page_id", page.id).eq("active", true).order("position");
+  renderPage(root, page, links || []);
+})();
+</script>
+</body>
+</html>

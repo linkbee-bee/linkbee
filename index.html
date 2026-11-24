@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="/images/logo.svg" type="image/svg+xml">
+<title>Linkbee — Seu link na bio, grátis e simples</title>
+<meta name="description" content="Crie seu Linkbee grátis: uma pagina unica com todos os seus links para Instagram, TikTok e WhatsApp.">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header class="nav">
+  <a class="logo" href="/"><img src="/images/logo.svg" alt="Linkbee" class="logo-img"></a>
+  <div class="actions" id="navActions">
+    <button class="btn ghost sm" data-auth="login">Entrar</button>
+    <button class="btn brand sm" data-auth="signup">Cadastre-se grátis</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div>
+    <h1>Todos os seus links em <em>um so lugar</em>.</h1>
+    <p>Crie sua pagina Linkbee em menos de 2 minutos, compartilhe na bio do Instagram, TikTok ou WhatsApp e leve seu publico para onde importa. Sem custo, sem complicação.</p>
+    <form class="claim" id="claim">
+      <span>linkbee.com/</span>
+      <input id="claimInput" placeholder="seunome" maxlength="30" autocomplete="off">
+      <button class="btn brand" type="submit">Criar meu Linkbee</button>
+    </form>
+  </div>
+  <div class="hero-art"><img src="/images/img1.svg" alt="Exemplo de pagina Linkbee" class="hero-img"></div>
+</section>
+
+<section class="section">
+  <h2>Simples de propósito</h2>
+  <p class="sub">Tudo o que voce precisa para ter uma pagina bonita, e nada que atrapalhe.</p>
+  <div class="grid3">
+    <div class="card"><div class="num">1</div><h3>Crie sua conta</h3><p>Escolha seu nome de usuário e ele vira o endereço do seu Linkbee. E grátis para sempre.</p></div>
+    <div class="card"><div class="num">2</div><h3>Adicione seus links</h3><p>Perfil, bio, redes sociais e quantos links quiser, com imagem. Veja o resultado ao vivo no celular.</p></div>
+    <div class="card"><div class="num">3</div><h3>Compartilhe</h3><p>Copie seu link e cole na bio. Pronto: sua página já está no ar e funciona em qualquer dispositivo.</p></div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="grid3">
+    <div class="card"><h3>Design pronto</h3><p>Visual moderno e leve, escolha o tom de cor que melhor se adapte ao seu estilo.</p></div>
+    <div class="card"><h3>Seus dados, seu controle</h3><p>Exclua seu Linkbee ou sua conta inteira quando quiser, de forma permanente e sem complicações.</p></div>
+    <div class="card"><h3>Sem distração</h3><p>Sem painel confuso e sem métricas que você não pediu. Só seus links.</p></div>
+  </div>
+</section>
+
+<section class="cta">
+  <h2>Pronto para criar o seu?</h2>
+  <p>Leva menos de 2 minutos e não precisa de cartão.</p>
+  <button class="btn" data-auth="signup">Criar meu Linkbee grátis</button>
+</section>
+<footer>&copy; <span id="yr"></span> Linkbee. Feito com carinho para você.</footer>
+
+<dialog id="authDlg">
+  <div class="dlg">
+    <button class="x" id="closeDlg" aria-label="Fechar">&times;</button>
+    <a class="logo" href="/"><img src="/images/logo.svg" alt="Linkbee" class="logo-img"></a>
+    <div class="tabs"><button id="tabLogin" class="on" type="button">Entrar</button><button id="tabSignup" type="button">Cadastrar</button></div>
+    <button class="btn ghost block" id="googleBtn" type="button" style="margin-top:14px">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.9-6.1C.9 16.4 0 20.1 0 24s.9 7.6 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.9 2.3-8.4 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>
+      Continuar com Google
+    </button>
+    <p style="text-align:center;color:var(--mute);font-size:13px;margin:12px 0 0">ou use seu e-mail</p>
+    <form id="authForm">
+      <div id="userWrap" class="hidden">
+        <label for="fUser">Nome de usuário</label>
+        <input id="fUser" type="text" placeholder="seunome" maxlength="30" autocomplete="username">
+      </div>
+      <label for="fEmail">E-mail</label>
+      <input id="fEmail" type="email" required autocomplete="email">
+      <label for="fPass">Senha</label>
+      <input id="fPass" type="password" required minlength="6" autocomplete="current-password">
+      <p class="msg hidden" id="authMsg"></p>
+      <button class="btn brand block" id="authBtn" style="margin-top:18px">Entrar</button>
+      <p style="text-align:center;margin-top:12px"><a href="#" id="forgot" style="font-size:14px;color:var(--ink);text-decoration:underline;font-weight:600">Esqueci minha senha</a></p>
+    </form>
+  </div>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/config.js"></script>
+<script src="/js/app.js"></script>
+<script>
+document.getElementById("yr").textContent = new Date().getFullYear();
+
+const dlg = document.getElementById("authDlg");
+let mode = "login";
+function setMode(m) {
+  mode = m;
+  tabLogin.classList.toggle("on", m === "login");
+  tabSignup.classList.toggle("on", m === "signup");
+  userWrap.classList.toggle("hidden", m !== "signup");
+  authBtn.textContent = m === "login" ? "Entrar" : "Criar minha conta";
+  fPass.autocomplete = m === "login" ? "current-password" : "new-password";
+  forgot.parentElement.classList.toggle("hidden", m !== "login");
+  authMsg.classList.add("hidden");
+}
+function openAuth(m) { setMode(m); if (!dlg.open) dlg.showModal(); }
+function showMsg(t, ok) { authMsg.textContent = t; authMsg.className = "msg" + (ok ? " ok" : ""); }
+document.querySelectorAll("[data-auth]").forEach((b) => b.addEventListener("click", () => openAuth(b.dataset.auth)));
+tabLogin.onclick = () => setMode("login");
+tabSignup.onclick = () => setMode("signup");
+closeDlg.onclick = () => dlg.close();
+dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+
+claim.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const v = claimInput.value.toLowerCase().replace(/[^a-z0-9_.-]/g, "");
+  openAuth("signup"); fUser.value = v;
+});
+
+authForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  authBtn.disabled = true; authMsg.classList.add("hidden");
+  try {
+    if (mode === "login") {
+      const { error } = await sb.auth.signInWithPassword({ email: fEmail.value.trim(), password: fPass.value });
+      if (error) throw error;
+      location.href = "/dashboard.html";
+    } else {
+      const username = fUser.value.trim().toLowerCase();
+      if (!/^[a-z0-9_.-]{3,30}$/.test(username)) throw new Error("Usuario: 3 a 30 caracteres (letras, numeros, _ . -).");
+      const { data: taken } = await sb.from("pages").select("id").eq("slug", username).maybeSingle();
+      if (taken) throw new Error("Esse nome de usuario ja esta em uso.");
+      const { data, error } = await sb.auth.signUp({ email: fEmail.value.trim(), password: fPass.value, options: { data: { username } } });
+      if (error) throw error;
+      if (data.session) location.href = "/dashboard.html";
+      else showMsg("Conta criada! Confirme seu e-mail para entrar.", true);
+    }
+  } catch (err) {
+    const m = err.message || "Erro inesperado.";
+    showMsg(/Invalid login/i.test(m) ? "E-mail ou senha incorretos." : m);
+  } finally { authBtn.disabled = false; }
+});
+
+googleBtn.addEventListener("click", async () => {
+  const { error } = await sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: location.origin + "/dashboard.html" } });
+  if (error) showMsg(error.message);
+});
+
+forgot.addEventListener("click", async (e) => {
+  e.preventDefault();
+  if (!fEmail.value) return showMsg("Digite seu e-mail acima primeiro.");
+  const { error } = await sb.auth.resetPasswordForEmail(fEmail.value.trim(), { redirectTo: location.origin + "/conta.html" });
+  showMsg(error ? error.message : "Enviamos um link para redefinir sua senha.", !error);
+});
+
+sb.auth.getSession().then(({ data }) => {
+  if (data.session) {
+    navActions.innerHTML = '<a class="btn brand sm" href="/dashboard.html">Ir para o painel</a>';
+  }
+});
+</script>
+</body>
+</html>

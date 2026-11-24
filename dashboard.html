@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="/images/logo.svg" type="image/svg+xml">
+<title>Painel — Linkbee</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="logo" href="/dashboard.html"><img src="/images/logo.svg" alt="Linkbee" class="logo-img"></a>
+  <nav><a class="on" href="/dashboard.html">Meu Linkbee</a><a href="/conta.html">Conta</a></nav>
+  <div class="urlpill"><span id="urlTxt">...</span><button class="btn sm brand" id="copyBtn">Copiar</button></div>
+</header>
+
+<main class="workspace">
+  <div>
+    <section class="panel">
+      <h2>Perfil</h2>
+      <div class="profile-row">
+        <div class="avatar-pick" id="avatarBox"></div>
+        <div>
+          <button class="btn soft sm" id="avatarBtn" type="button">Trocar foto</button>
+          <input type="file" id="avatarFile" accept="image/*" class="hidden">
+        </div>
+      </div>
+      <label for="pTitle">Titulo</label>
+      <input id="pTitle" type="text" maxlength="60">
+      <label for="pBio">Bio</label>
+      <textarea id="pBio" maxlength="200"></textarea>
+      <label>Redes sociais</label>
+      <div class="two" id="socialFields"></div>
+      <button class="btn brand" id="saveProfile" style="margin-top:16px">Salvar perfil</button>
+    </section>
+
+    <section class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h2>Links</h2>
+        <button class="btn sm" id="addLink">+ Adicionar link</button>
+      </div>
+      <div id="linkList"></div>
+    </section>
+  </div>
+
+  <aside class="preview-wrap">
+    <div class="phone"><div class="screen"><div class="lb" id="preview"></div></div></div>
+  </aside>
+</main>
+
+<dialog id="linkDlg">
+  <form class="dlg" id="linkForm">
+    <button class="x" type="button" id="linkClose">&times;</button>
+    <h2 id="linkDlgTitle">Novo link</h2>
+    <div class="profile-row">
+      <div class="avatar-pick" id="iconBox" style="width:60px;height:60px;font-size:22px;border-radius:14px"></div>
+      <div>
+        <button class="btn soft sm" id="iconBtn" type="button">Imagem do link</button>
+        <button class="btn ghost sm hidden" id="iconRm" type="button">Remover</button>
+        <input type="file" id="iconFile" accept="image/*" class="hidden">
+      </div>
+    </div>
+    <label for="lTitle">Titulo</label>
+    <input id="lTitle" type="text" maxlength="80" required>
+    <label for="lSub">Subtitulo (opcional)</label>
+    <input id="lSub" type="text" maxlength="120">
+    <label for="lUrl">Endereco (URL)</label>
+    <input id="lUrl" type="text" placeholder="https://" required>
+    <button class="btn brand block" id="linkSave" style="margin-top:18px">Salvar</button>
+  </form>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/config.js"></script>
+<script src="/js/app.js"></script>
+<script>
+let user, page, links = [], editing = null, editIcon = null;
+const $ = (id) => document.getElementById(id);
+
+(async function init() {
+  const { data } = await sb.auth.getSession();
+  if (!data.session) return (location.href = "/");
+  user = data.session.user;
+  let { data: p } = await sb.from("pages").select("*").eq("user_id", user.id).maybeSingle();
+  if (!p) {
+    // Conta existente sem pagina (ex.: Linkbee excluido): recria
+    const base = (user.user_metadata?.username || user.email.split("@")[0]).toLowerCase().replace(/[^a-z0-9_.-]/g, "").slice(0, 24).padEnd(3, "x");
+    const slug = base + "-" + Math.random().toString(36).slice(2, 6);
+    const r = await sb.from("pages").insert({ user_id: user.id, slug, title: base }).select().single();
+    if (r.error) return toast(r.error.message, "err");
+    p = r.data;
+  }
+  page = p;
+  $("socialFields").innerHTML = SOCIAL_FIELDS.map(([k, l, ph]) => `<div><label>${l}</label><input type="text" data-soc="${k}" placeholder="${esc(ph)}"></div>`).join("");
+  $("pTitle").value = page.title; $("pBio").value = page.bio;
+  document.querySelectorAll("[data-soc]").forEach((i) => (i.value = page.socials?.[i.dataset.soc] || ""));
+  const u = publicUrl(page.slug);
+  $("urlTxt").textContent = u.replace(/^https?:\/\//, "");
+  await loadLinks();
+  bindLive();
+})();
+
+async function loadLinks() {
+  const { data, error } = await sb.from("links").select("*").eq("page_id", page.id).order("position");
+  if (error) toast(error.message, "err");
+  links = data || [];
+  drawLinks(); drawPreview();
+}
+
+function currentPage() {
+  const socials = {};
+  document.querySelectorAll("[data-soc]").forEach((i) => { if (i.value.trim()) socials[i.dataset.soc] = i.value.trim(); });
+  return { ...page, title: $("pTitle").value, bio: $("pBio").value, socials };
+}
+function drawPreview() { renderPage($("preview"), currentPage(), links); $("preview").querySelectorAll("a").forEach((a) => a.addEventListener("click", (e) => e.preventDefault())); drawAvatar(); }
+function drawAvatar() {
+  $("avatarBox").innerHTML = page.avatar_url ? `<img src="${esc(page.avatar_url)}" alt="">` : esc((($("pTitle").value || page.slug).charAt(0) || "?").toUpperCase());
+}
+function bindLive() {
+  ["pTitle", "pBio"].forEach((id) => $(id).addEventListener("input", drawPreview));
+  document.querySelectorAll("[data-soc]").forEach((i) => i.addEventListener("input", drawPreview));
+}
+
+function drawLinks() {
+  const box = $("linkList");
+  if (!links.length) { box.innerHTML = '<p class="empty">Nenhum link ainda. Clique em "Adicionar link".</p>'; return; }
+  box.innerHTML = links.map((l, i) => `
+    <div class="linkcard" data-id="${l.id}">
+      <div class="ico">${l.icon_url ? `<img src="${esc(l.icon_url)}" alt="">` : esc(l.title.charAt(0).toUpperCase())}</div>
+      <div class="info"><b>${esc(l.title)}</b><small>${esc(l.url)}</small></div>
+      <button class="iconbtn" data-act="up" ${i === 0 ? "disabled" : ""} title="Subir">&uarr;</button>
+      <button class="iconbtn" data-act="down" ${i === links.length - 1 ? "disabled" : ""} title="Descer">&darr;</button>
+      <button class="iconbtn" data-act="edit" title="Editar">&#9998;</button>
+      <button class="iconbtn del" data-act="del" title="Excluir">&times;</button>
+      <label class="switch"><input type="checkbox" data-act="tog" ${l.active ? "checked" : ""}><i></i></label>
+    </div>`).join("");
+}
+
+$("linkList").addEventListener("click", async (e) => {
+  const act = e.target.closest("[data-act]")?.dataset.act;
+  const card = e.target.closest(".linkcard");
+  if (!act || !card || act === "tog") return;
+  const idx = links.findIndex((l) => l.id === card.dataset.id);
+  if (act === "edit") return openLinkDlg(links[idx]);
+  if (act === "del") {
+    if (!confirm("Excluir este link?")) return;
+    const { error } = await sb.from("links").delete().eq("id", links[idx].id);
+    if (error) return toast(error.message, "err");
+    links.splice(idx, 1); drawLinks(); drawPreview(); return;
+  }
+  const j = act === "up" ? idx - 1 : idx + 1;
+  if (j < 0 || j >= links.length) return;
+  [links[idx], links[j]] = [links[j], links[idx]];
+  drawLinks(); drawPreview();
+  const res = await Promise.all(links.map((l, i) => { l.position = i; return sb.from("links").update({ position: i }).eq("id", l.id); }));
+  if (res.some((r) => r.error)) toast("Erro ao reordenar.", "err");
+});
+$("linkList").addEventListener("change", async (e) => {
+  if (e.target.dataset.act !== "tog") return;
+  const l = links.find((x) => x.id === e.target.closest(".linkcard").dataset.id);
+  l.active = e.target.checked; drawPreview();
+  const { error } = await sb.from("links").update({ active: l.active }).eq("id", l.id);
+  if (error) toast(error.message, "err");
+});
+
+// Perfil
+$("avatarBtn").onclick = () => $("avatarFile").click();
+$("avatarFile").onchange = async (e) => {
+  const f = e.target.files[0]; if (!f) return;
+  $("avatarBtn").disabled = true; $("avatarBtn").textContent = "Enviando...";
+  try {
+    page.avatar_url = await uploadImage(f);
+    const { error } = await sb.from("pages").update({ avatar_url: page.avatar_url }).eq("id", page.id);
+    if (error) throw error;
+    drawPreview(); toast("Foto atualizada!");
+  } catch (err) { toast(err.message, "err"); }
+  $("avatarBtn").disabled = false; $("avatarBtn").textContent = "Trocar foto"; e.target.value = "";
+};
+$("saveProfile").onclick = async () => {
+  const c = currentPage();
+  $("saveProfile").disabled = true;
+  const { error } = await sb.from("pages").update({ title: c.title.trim(), bio: c.bio.trim(), socials: c.socials }).eq("id", page.id);
+  $("saveProfile").disabled = false;
+  if (error) return toast(error.message, "err");
+  Object.assign(page, { title: c.title.trim(), bio: c.bio.trim(), socials: c.socials });
+  toast("Perfil salvo!");
+};
+$("copyBtn").onclick = async () => { await navigator.clipboard.writeText(publicUrl(page.slug)); toast("Link copiado!"); };
+
+// Dialogo de link
+function drawIcon() {
+  $("iconBox").innerHTML = editIcon ? `<img src="${esc(editIcon)}" alt="">` : "&#128279;";
+  $("iconRm").classList.toggle("hidden", !editIcon);
+}
+function openLinkDlg(l) {
+  editing = l || null; editIcon = l?.icon_url || null;
+  $("linkDlgTitle").textContent = l ? "Editar link" : "Novo link";
+  $("lTitle").value = l?.title || ""; $("lSub").value = l?.subtitle || ""; $("lUrl").value = l?.url || "";
+  drawIcon(); $("linkDlg").showModal();
+}
+$("addLink").onclick = () => openLinkDlg();
+$("linkClose").onclick = () => $("linkDlg").close();
+$("iconBtn").onclick = () => $("iconFile").click();
+$("iconRm").onclick = () => { editIcon = null; drawIcon(); };
+$("iconFile").onchange = async (e) => {
+  const f = e.target.files[0]; if (!f) return;
+  try { $("iconBtn").textContent = "Enviando..."; editIcon = await uploadImage(f); drawIcon(); }
+  catch (err) { toast(err.message, "err"); }
+  $("iconBtn").textContent = "Imagem do link"; e.target.value = "";
+};
+$("linkForm").onsubmit = async (e) => {
+  e.preventDefault();
+  $("linkSave").disabled = true;
+  const row = { title: $("lTitle").value.trim(), subtitle: $("lSub").value.trim(), url: safeUrl($("lUrl").value), icon_url: editIcon };
+  let res;
+  if (editing) res = await sb.from("links").update(row).eq("id", editing.id).select().single();
+  else res = await sb.from("links").insert({ ...row, page_id: page.id, user_id: user.id, position: links.length }).select().single();
+  $("linkSave").disabled = false;
+  if (res.error) return toast(res.error.message, "err");
+  if (editing) links[links.findIndex((l) => l.id === editing.id)] = res.data; else links.push(res.data);
+  $("linkDlg").close(); drawLinks(); drawPreview(); toast("Link salvo!");
+};
+</script>
+</body>
+</html>
