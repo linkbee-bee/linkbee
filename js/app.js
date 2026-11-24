@@ -43,23 +43,55 @@ const ICONS = {
   website: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>',
   email: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7l8.5 6 8.5-6"/></svg>',
 };
+ICONS.facebook = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-8h2.7l.5-3.2h-3.2V7.7c0-.9.4-1.7 1.8-1.7h1.5V3.2S15.4 3 14.2 3c-2.6 0-4.2 1.5-4.2 4.4v2.4H7.3V13H10v8h3.5z"/></svg>';
+
+// Redes: a pessoa digita so o usuario (ou numero) e o sistema monta o link.
+const NETWORKS = {
+  instagram: { label: "Instagram", ph: "seu usuário (ex.: sandrasamanta)", build: (u) => `https://www.instagram.com/${u}`, detect: /instagram\.com\/([^/?#]+)/i },
+  tiktok: { label: "TikTok", ph: "seu usuário (ex.: sandrasamanta)", build: (u) => `https://www.tiktok.com/@${u}`, detect: /tiktok\.com\/@?([^/?#]+)/i },
+  linkedin: { label: "LinkedIn", ph: "seu usuário (ex.: sandra-silva-185225436)", build: (u) => `https://www.linkedin.com/in/${u}`, detect: /linkedin\.com\/in\/([^/?#]+)/i },
+  facebook: { label: "Facebook", ph: "seu usuário (ex.: sara.ferreira.5876)", build: (u) => `https://www.facebook.com/${u}`, detect: /facebook\.com\/([^/?#]+)/i },
+  whatsapp: { label: "WhatsApp", ph: "número com DDI (ex.: 351961082332)", build: (u) => `https://wa.me/${u}`, detect: /wa\.me\/(\d+)/i },
+  youtube: { label: "YouTube", ph: "seu canal (ex.: seucanal)", build: (u) => `https://www.youtube.com/@${u}`, detect: /youtube\.com\/@?([^/?#]+)/i },
+};
+
+function buildNetworkUrl(net, input) {
+  input = String(input || "").trim();
+  if (!input) return "";
+  // Colou um link completo: usa como esta
+  if (/^https?:\/\//i.test(input) || /\.[a-z]{2,}\//i.test(input)) return safeUrl(input);
+  if (net === "whatsapp") {
+    const digits = input.replace(/\D/g, "");
+    return digits ? NETWORKS.whatsapp.build(digits) : "";
+  }
+  const user = input.replace(/^[@/]+/, "").replace(/\/+$/, "");
+  if (!user || !NETWORKS[net]) return "";
+  return NETWORKS[net].build(encodeURIComponent(user));
+}
+
+function detectNetwork(url) {
+  for (const k of ["instagram", "tiktok", "linkedin", "facebook", "whatsapp"]) {
+    const m = NETWORKS[k].detect.exec(url || "");
+    if (m) return { net: k, value: decodeURIComponent(m[1]) };
+  }
+  return { net: "other", value: url || "" };
+}
+
 const SOCIAL_FIELDS = [
-  ["instagram", "Instagram", "https://instagram.com/seuuser"],
-  ["whatsapp", "WhatsApp", "5511999999999 (so numeros)"],
-  ["tiktok", "TikTok", "https://tiktok.com/@seuuser"],
-  ["youtube", "YouTube", "https://youtube.com/@seucanal"],
-  ["website", "Site", "https://seusite.com"],
+  ["instagram", "Instagram", NETWORKS.instagram.ph],
+  ["tiktok", "TikTok", NETWORKS.tiktok.ph],
+  ["linkedin", "LinkedIn", NETWORKS.linkedin.ph],
+  ["facebook", "Facebook", NETWORKS.facebook.ph],
+  ["whatsapp", "WhatsApp", NETWORKS.whatsapp.ph],
+  ["youtube", "YouTube", NETWORKS.youtube.ph],
+  ["website", "Site (link completo)", "https://seusite.com"],
   ["email", "E-mail", "voce@email.com"],
 ];
 
 function socialHref(key, val) {
   val = String(val || "").trim();
   if (!val) return "";
-  if (key === "whatsapp") {
-    const digits = val.replace(/\D/g, "");
-    return digits ? "https://wa.me/" + digits : "";
-  }
-  return safeUrl(val);
+  return NETWORKS[key] ? buildNetworkUrl(key, val) : safeUrl(val);
 }
 
 ICONS.linkedin = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.5 8.7H3.3V20h3.2V8.7zM4.9 3.8a1.9 1.9 0 1 0 0 3.8 1.9 1.9 0 0 0 0-3.8zM20.7 13.3c0-3-1.6-4.9-4.2-4.9-1.4 0-2.4.7-2.9 1.5V8.7h-3.1V20h3.2v-6.1c0-1.6.8-2.6 2-2.6s1.8.9 1.8 2.5V20h3.2v-6.7z"/></svg>';
@@ -68,6 +100,7 @@ const LINK_ICONS = {
   tiktok: { label: "TikTok", bg: "#000000" },
   whatsapp: { label: "WhatsApp", bg: "#25D366" },
   linkedin: { label: "LinkedIn", bg: "#0A66C2" },
+  facebook: { label: "Facebook", bg: "#1877F2" },
   youtube: { label: "YouTube", bg: "#FF0000" },
 };
 // icon_url pode ser uma URL de imagem ou "preset:<nome>"

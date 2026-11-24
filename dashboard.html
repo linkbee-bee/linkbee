@@ -85,11 +85,13 @@
     </div>
     <label>Ou escolha um ícone</label>
     <div class="icon-presets" id="iconPresets"></div>
+    <label for="lNet">Rede</label>
+    <select id="lNet"></select>
     <label for="lTitle">Titulo</label>
     <input id="lTitle" type="text" maxlength="80" required>
     <label for="lSub">Subtitulo (opcional)</label>
     <input id="lSub" type="text" maxlength="120">
-    <label for="lUrl">Endereco (URL)</label>
+    <label for="lUrl" id="lUrlLabel">Endereço (URL)</label>
     <input id="lUrl" type="text" placeholder="https://" required>
     <button class="btn brand block" id="linkSave" style="margin-top:18px">Salvar</button>
   </form>
@@ -258,9 +260,24 @@ $("iconPresets").addEventListener("click", (e) => {
 function openLinkDlg(l) {
   editing = l || null; editIcon = l?.icon_url || null;
   $("linkDlgTitle").textContent = l ? "Editar link" : "Novo link";
-  $("lTitle").value = l?.title || ""; $("lSub").value = l?.subtitle || ""; $("lUrl").value = l?.url || "";
+  $("lTitle").value = l?.title || ""; $("lSub").value = l?.subtitle || "";
+  const d = l ? detectNetwork(l.url) : { net: "instagram", value: "" };
+  $("lNet").value = d.net; $("lUrl").value = d.value;
+  syncNet(false);
   drawIcon(); $("linkDlg").showModal();
 }
+const NET_ORDER = ["instagram", "tiktok", "linkedin", "facebook", "whatsapp", "other"];
+$("lNet").innerHTML = NET_ORDER.map((k) => `<option value="${k}">${k === "other" ? "Outro (link)" : NETWORKS[k].label}</option>`).join("");
+function syncNet(auto) {
+  const k = $("lNet").value, other = k === "other";
+  $("lUrlLabel").textContent = other ? "Endereço (URL)" : k === "whatsapp" ? "Número com DDI" : "Usuário";
+  $("lUrl").placeholder = other ? "https://" : NETWORKS[k].ph;
+  if (auto && !other) {
+    editIcon = "preset:" + k; drawIcon();
+    if (!$("lTitle").value.trim()) $("lTitle").value = NETWORKS[k].label;
+  }
+}
+$("lNet").onchange = () => syncNet(true);
 $("addLink").onclick = () => openLinkDlg();
 $("linkClose").onclick = () => $("linkDlg").close();
 $("iconBtn").onclick = () => $("iconFile").click();
@@ -273,8 +290,11 @@ $("iconFile").onchange = async (e) => {
 };
 $("linkForm").onsubmit = async (e) => {
   e.preventDefault();
+  const net = $("lNet").value;
+  const url = net === "other" ? safeUrl($("lUrl").value) : buildNetworkUrl(net, $("lUrl").value);
+  if (!url) return toast("Preencha o usuário, número ou link.", "err");
   $("linkSave").disabled = true;
-  const row = { title: $("lTitle").value.trim(), subtitle: $("lSub").value.trim(), url: safeUrl($("lUrl").value), icon_url: editIcon };
+  const row = { title: $("lTitle").value.trim(), subtitle: $("lSub").value.trim(), url, icon_url: editIcon || (net === "other" ? null : "preset:" + net) };
   let res;
   if (editing) res = await sb.from("links").update(row).eq("id", editing.id).select().single();
   else res = await sb.from("links").insert({ ...row, page_id: page.id, user_id: user.id, position: links.length }).select().single();

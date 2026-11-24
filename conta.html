@@ -32,7 +32,7 @@
     <button class="btn brand sm" id="saveSlug" style="margin-top:14px">Salvar endereço</button>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="pwPanel">
     <h2>Alterar senha</h2>
     <label for="np">Nova senha</label>
     <input id="np" type="password" minlength="6" autocomplete="new-password">
@@ -83,6 +83,9 @@ let onConfirm = null;
   if (!data.session) return (location.href = "/");
   const user = data.session.user;
   $("email").textContent = user.email;
+  // Quem entrou so pelo Google nao tem senha no Linkbee
+  const providers = user.app_metadata?.providers || [user.app_metadata?.provider];
+  if (!providers.includes("email")) $("pwPanel").classList.add("hidden");
   const { data: p } = await sb.from("pages").select("slug").eq("user_id", user.id).maybeSingle();
   $("slugPrefix").textContent = location.host + "/u/";
   if (p) { currentSlug = p.slug; showSlug(); $("slugIn").value = p.slug; }
