@@ -8,6 +8,7 @@ create table if not exists public.pages (
   bio text not null default '',
   avatar_url text,
   socials jsonb not null default '{}'::jsonb,
+  theme jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default now()
 );
 

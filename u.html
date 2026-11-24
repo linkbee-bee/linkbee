@@ -26,6 +26,7 @@
   document.title = (page.title || page.slug) + " | Linkbee";
   const { data: links } = await sb.from("links").select("*").eq("page_id", page.id).eq("active", true).order("position");
   renderPage(root, page, links || []);
+  document.body.style.background = themeOf(page).useGradient ? themeOf(page).bg2 : themeOf(page).bg;
 })();
 </script>
 </body>

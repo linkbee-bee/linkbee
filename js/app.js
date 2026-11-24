@@ -62,7 +62,39 @@ function socialHref(key, val) {
   return safeUrl(val);
 }
 
+const DEFAULT_THEME = { bg: "#120c01", useGradient: false, bg2: "#2a1d04", title: "#fdc603", text: "#f7dd9d", btn: "#f7dd9d", btnText: "#120c01", shape: "pill" };
+const THEME_PRESETS = {
+  "Escuro": DEFAULT_THEME,
+  "Claro": { bg: "#fffdf7", useGradient: false, bg2: "#f7dd9d", title: "#120c01", text: "#4a3f26", btn: "#fdc603", btnText: "#120c01", shape: "round" },
+  "Amarelo": { bg: "#fdc603", useGradient: true, bg2: "#f1a201", title: "#120c01", text: "#120c01", btn: "#ffffff", btnText: "#120c01", shape: "pill" },
+  "Lilas": { bg: "#9b7be6", useGradient: true, bg2: "#b8a0f0", title: "#5b0fd6", text: "#ffffff", btn: "#ffffff", btnText: "#5b0fd6", shape: "pill" },
+};
+const SHAPES = { pill: ["999px", "50%"], round: ["16px", "12px"], square: ["0", "0"] };
+
+function themeOf(page) {
+  const t = { ...DEFAULT_THEME, ...(page.theme || {}) };
+  for (const k of ["bg", "bg2", "title", "text", "btn", "btnText"]) {
+    if (!/^#[0-9a-f]{6}$/i.test(t[k])) t[k] = DEFAULT_THEME[k];
+  }
+  if (!SHAPES[t.shape]) t.shape = "pill";
+  t.useGradient = t.useGradient === true;
+  return t;
+}
+
+function applyTheme(el, page) {
+  const t = themeOf(page), s = el.style;
+  s.setProperty("--lb-bg", t.useGradient ? `linear-gradient(180deg, ${t.bg} 0%, ${t.bg2} 100%)` : t.bg);
+  s.setProperty("--lb-title", t.title);
+  s.setProperty("--lb-text", t.text);
+  s.setProperty("--lb-btn", t.btn);
+  s.setProperty("--lb-btn-text", t.btnText);
+  s.setProperty("--lb-radius", SHAPES[t.shape][0]);
+  s.setProperty("--lb-ico-radius", SHAPES[t.shape][1]);
+  return t;
+}
+
 function renderPage(el, page, links) {
+  applyTheme(el, page);
   const name = page.title || page.slug || "";
   const initial = esc((name || "?").trim().charAt(0).toUpperCase());
   const socials = SOCIAL_FIELDS.map(([k]) => {

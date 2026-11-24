@@ -35,6 +35,29 @@
     </section>
 
     <section class="panel">
+      <h2>Aparência</h2>
+      <label>Temas prontos</label>
+      <div class="presets" id="presets"></div>
+      <label>Cores</label>
+      <div class="theme-grid">
+        <div class="colorrow"><input type="color" id="tBg"><span>Fundo</span></div>
+        <div class="colorrow"><input type="color" id="tBg2"><span>Fundo 2 (degradê)</span></div>
+        <div class="colorrow"><input type="color" id="tTitle"><span>Título e ícones</span></div>
+        <div class="colorrow"><input type="color" id="tText"><span>Texto (bio)</span></div>
+        <div class="colorrow"><input type="color" id="tBtn"><span>Fundo dos botões</span></div>
+        <div class="colorrow"><input type="color" id="tBtnText"><span>Texto dos botões</span></div>
+      </div>
+      <label style="display:flex;gap:8px;align-items:center;font-weight:600"><input type="checkbox" id="tGrad"> Usar degradê no fundo</label>
+      <label>Formato dos botões</label>
+      <div class="shapes">
+        <label><input type="radio" name="shape" value="pill"><b class="s-pill">Arredondado</b></label>
+        <label><input type="radio" name="shape" value="round"><b class="s-round">Suave</b></label>
+        <label><input type="radio" name="shape" value="square"><b class="s-square">Quadrado</b></label>
+      </div>
+      <button class="btn brand" id="saveTheme" style="margin-top:16px">Salvar aparência</button>
+    </section>
+
+    <section class="panel">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <h2>Links</h2>
         <button class="btn sm" id="addLink">+ Adicionar link</button>
@@ -96,6 +119,7 @@ const $ = (id) => document.getElementById(id);
   document.querySelectorAll("[data-soc]").forEach((i) => (i.value = page.socials?.[i.dataset.soc] || ""));
   const u = publicUrl(page.slug);
   $("urlTxt").textContent = u.replace(/^https?:\/\//, "");
+  initTheme();
   await loadLinks();
   bindLive();
 })();
@@ -110,7 +134,37 @@ async function loadLinks() {
 function currentPage() {
   const socials = {};
   document.querySelectorAll("[data-soc]").forEach((i) => { if (i.value.trim()) socials[i.dataset.soc] = i.value.trim(); });
-  return { ...page, title: $("pTitle").value, bio: $("pBio").value, socials };
+  return { ...page, title: $("pTitle").value, bio: $("pBio").value, socials, theme: readTheme() };
+}
+function readTheme() {
+  return {
+    bg: $("tBg").value, bg2: $("tBg2").value, useGradient: $("tGrad").checked,
+    title: $("tTitle").value, text: $("tText").value, btn: $("tBtn").value, btnText: $("tBtnText").value,
+    shape: document.querySelector('input[name="shape"]:checked')?.value || "pill",
+  };
+}
+function fillTheme(raw) {
+  const t = themeOf({ theme: raw });
+  $("tBg").value = t.bg; $("tBg2").value = t.bg2; $("tGrad").checked = t.useGradient;
+  $("tTitle").value = t.title; $("tText").value = t.text; $("tBtn").value = t.btn; $("tBtnText").value = t.btnText;
+  document.querySelector(`input[name="shape"][value="${t.shape}"]`).checked = true;
+}
+function initTheme() {
+  fillTheme(page.theme);
+  $("presets").innerHTML = Object.keys(THEME_PRESETS).map((n) => `<button type="button" class="preset" data-p="${n}">${n}</button>`).join("");
+  $("presets").addEventListener("click", (e) => {
+    const n = e.target.dataset.p; if (!n) return;
+    fillTheme(THEME_PRESETS[n]); drawPreview();
+  });
+  document.querySelectorAll(".theme-grid input, #tGrad, input[name=shape]").forEach((i) => i.addEventListener("input", drawPreview));
+  $("saveTheme").onclick = async () => {
+    $("saveTheme").disabled = true;
+    const theme = readTheme();
+    const { error } = await sb.from("pages").update({ theme }).eq("id", page.id);
+    $("saveTheme").disabled = false;
+    if (error) return toast(/theme/i.test(error.message) ? "Rode o supabase/migration_theme.sql no Supabase primeiro." : error.message, "err");
+    page.theme = theme; toast("Aparência salva!");
+  };
 }
 function drawPreview() { renderPage($("preview"), currentPage(), links); $("preview").querySelectorAll("a").forEach((a) => a.addEventListener("click", (e) => e.preventDefault())); drawAvatar(); }
 function drawAvatar() {
