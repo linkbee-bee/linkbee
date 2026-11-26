@@ -3,14 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="icon" href="/images/logo.svg" type="image/svg+xml">
+<link rel="icon" href="/images/favicon.png" type="image/png">
 <title>Linkbee — Seu link na bio, grátis e simples</title>
 <meta name="description" data-i18n-content="meta_desc" content="Crie seu Linkbee grátis: uma página única com todos os seus links para Instagram, TikTok e WhatsApp.">
+<link rel="preload" as="image" type="image/webp" fetchpriority="high" href="/images/img1-640.webp" imagesrcset="/images/img1-640.webp 640w, /images/img1-1040.webp 1040w" imagesizes="(max-width: 580px) 90vw, 520px">
 <link rel="stylesheet" href="/css/style.css">
+<script defer src="/js/config.js"></script>
+<script defer src="/js/i18n.js"></script>
+<script defer src="/js/landing.js"></script>
 </head>
 <body data-title="title_home">
 <header class="nav">
-  <a class="logo" href="/"><img src="/images/logo.svg" alt="Linkbee" class="logo-img"></a>
+  <a class="logo" href="/"><img src="/images/logo.webp" alt="Linkbee" class="logo-img" width="200" height="210"></a>
   <div class="actions">
     <div class="lang" role="group" data-i18n-aria="lang_aria" aria-label="Idioma"><button type="button" data-lang="pt">PT</button><button type="button" data-lang="es">ES</button><button type="button" data-lang="en">EN</button></div>
     <div class="actions" id="navActions">
@@ -20,6 +24,7 @@
   </div>
 </header>
 
+<main>
 <section class="hero">
   <div>
     <h1><span data-i18n="hero_a">Todos os seus links em</span> <em data-i18n="hero_em">um só lugar</em>.</h1>
@@ -30,7 +35,7 @@
       <button class="btn brand" type="submit" data-i18n="claim_btn">Criar meu Linkbee</button>
     </form>
   </div>
-  <div class="hero-art"><img src="/images/img1.svg" data-i18n-alt="hero_alt" alt="Exemplo de página Linkbee" class="hero-img"></div>
+  <div class="hero-art"><img src="/images/img1-640.webp" srcset="/images/img1-640.webp 640w, /images/img1-1040.webp 1040w" sizes="(max-width: 580px) 90vw, 520px" width="1040" height="1091" fetchpriority="high" data-i18n-alt="hero_alt" alt="Exemplo de página Linkbee" class="hero-img"></div>
 </section>
 
 <section class="section">
@@ -56,12 +61,13 @@
   <p data-i18n="cta_p">Leva menos de 2 minutos e não precisa de cartão.</p>
   <button class="btn" data-auth="signup" data-i18n="cta_btn">Criar meu Linkbee grátis</button>
 </section>
+</main>
 <footer>&copy; <span id="yr"></span> <span data-i18n="footer_txt">Linkbee. Feito com carinho para você.</span></footer>
 
 <dialog id="authDlg">
   <div class="dlg">
     <button class="x" id="closeDlg" data-i18n-aria="close_aria" aria-label="Fechar">&times;</button>
-    <a class="logo" href="/"><img src="/images/logo.svg" alt="Linkbee" class="logo-img"></a>
+    <a class="logo" href="/"><img src="/images/logo.webp" alt="Linkbee" class="logo-img" width="200" height="210"></a>
     <div class="tabs"><button id="tabLogin" class="on" type="button" data-i18n="tab_login">Entrar</button><button id="tabSignup" type="button" data-i18n="tab_signup">Cadastrar</button></div>
     <button class="btn ghost block" id="googleBtn" type="button" style="margin-top:14px">
       <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.9-6.1C.9 16.4 0 20.1 0 24s.9 7.6 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.9 2.3-8.4 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>
@@ -114,138 +120,5 @@
   </div>
 </dialog>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/js/config.js"></script>
-<script src="/js/i18n.js"></script>
-<script src="/js/app.js"></script>
-<script>
-document.getElementById("yr").textContent = new Date().getFullYear();
-
-const dlg = document.getElementById("authDlg");
-let mode = "login";
-function setMode(m) {
-  mode = m;
-  tabLogin.classList.toggle("on", m === "login");
-  tabSignup.classList.toggle("on", m === "signup");
-  userWrap.classList.toggle("hidden", m !== "signup");
-  pass2Wrap.classList.toggle("hidden", m !== "signup");
-  fPass2.value = "";
-  authBtn.dataset.i18n = m === "login" ? "btn_login" : "btn_signup";
-  authBtn.textContent = I18N.t(authBtn.dataset.i18n);
-  fPass.autocomplete = m === "login" ? "current-password" : "new-password";
-  forgot.parentElement.classList.toggle("hidden", m !== "login");
-  authMsg.classList.add("hidden");
-}
-function openAuth(m) { showReset(false); setMode(m); if (!dlg.open) dlg.showModal(); }
-function showErr(err) {
-  if (err.key) I18N.msg(authMsg, err.key);
-  else if (/Invalid login/i.test(err.message || "")) I18N.msg(authMsg, "err_invalid_login");
-  else I18N.raw(authMsg, err.message || I18N.t("err_generic"));
-}
-document.querySelectorAll("[data-auth]").forEach((b) => b.addEventListener("click", () => openAuth(b.dataset.auth)));
-tabLogin.onclick = () => setMode("login");
-tabSignup.onclick = () => setMode("signup");
-closeDlg.onclick = () => dlg.close();
-dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
-
-claim.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const v = claimInput.value.toLowerCase().replace(/[^a-z0-9_.-]/g, "");
-  openAuth("signup"); fUser.value = v;
-});
-
-authForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  authBtn.disabled = true; authMsg.classList.add("hidden");
-  try {
-    if (mode === "login") {
-      const { error } = await sb.auth.signInWithPassword({ email: fEmail.value.trim(), password: fPass.value });
-      if (error) throw error;
-      location.href = "/dashboard.html";
-    } else {
-      const username = fUser.value.trim().toLowerCase();
-      if (!/^[a-z0-9_.-]{3,30}$/.test(username)) throw new I18N.KeyErr("err_username");
-      if (fPass.value !== fPass2.value) throw new I18N.KeyErr("err_pass_match");
-      const { data: taken } = await sb.from("pages").select("id").eq("slug", username).maybeSingle();
-      if (taken) throw new I18N.KeyErr("err_taken");
-      const { data, error } = await sb.auth.signUp({ email: fEmail.value.trim(), password: fPass.value, options: { data: { username } } });
-      if (error) throw error;
-      if (data.session) location.href = "/dashboard.html";
-      else I18N.msg(authMsg, "signup_confirm", true);
-    }
-  } catch (err) {
-    showErr(err);
-  } finally { authBtn.disabled = false; }
-});
-
-googleBtn.addEventListener("click", async () => {
-  const { error } = await sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: location.origin + "/dashboard.html" } });
-  if (error) I18N.raw(authMsg, error.message);
-});
-
-// Recuperacao de senha por codigo (Edge Function "password-reset")
-let rStep = 1;
-function rShowErr(err) { if (err.key) I18N.msg(rMsg, err.key); else I18N.raw(rMsg, err.message || I18N.t("err_generic")); }
-function showReset(on) {
-  resetForm.classList.toggle("hidden", !on);
-  authForm.classList.toggle("hidden", on);
-  document.querySelector(".tabs").classList.toggle("hidden", on);
-  googleBtn.classList.toggle("hidden", on);
-  orTxt.classList.toggle("hidden", on);
-  if (on) {
-    rStep = 1; rEmail.value = fEmail.value;
-    rStep1.classList.remove("hidden"); rStep2.classList.add("hidden");
-    rBtn.dataset.i18n = "btn_send_code"; rBtn.textContent = I18N.t("btn_send_code"); rMsg.classList.add("hidden");
-    rResend.classList.add("hidden"); rSep.classList.add("hidden");
-    rCode.value = rPass.value = rPass2.value = "";
-  }
-}
-async function resetCall(body) {
-  const r = await fetch(`${LINKBEE.SUPABASE_URL}/functions/v1/password-reset`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", apikey: LINKBEE.SUPABASE_ANON_KEY },
-    body: JSON.stringify({ ...body, lang: I18N.idioma() }),
-  });
-  const j = await r.json().catch(() => ({}));
-  if (!r.ok) throw new I18N.KeyErr(I18N.has("fn_" + j.error) ? "fn_" + j.error : "fn_internal");
-  return j;
-}
-async function sendCode() {
-  await resetCall({ action: "request", email: rEmail.value.trim() });
-  rStep = 2;
-  rStep1.classList.add("hidden"); rStep2.classList.remove("hidden");
-  rBtn.dataset.i18n = "btn_reset"; rBtn.textContent = I18N.t("btn_reset");
-  rResend.classList.remove("hidden"); rSep.classList.remove("hidden");
-  I18N.msg(rMsg, "reset_sent", true);
-}
-forgot.addEventListener("click", (e) => { e.preventDefault(); showReset(true); });
-rBack.addEventListener("click", (e) => { e.preventDefault(); showReset(false); setMode("login"); });
-rResend.addEventListener("click", async (e) => {
-  e.preventDefault();
-  try { await sendCode(); I18N.msg(rMsg, "reset_resent", true); } catch (err) { rShowErr(err); }
-});
-resetForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  rBtn.disabled = true; rMsg.classList.add("hidden");
-  try {
-    if (rStep === 1) { await sendCode(); return; }
-    if (!/^\d{6}$/.test(rCode.value.trim())) throw new I18N.KeyErr("err_code6");
-    if (rPass.value.length < 6) throw new I18N.KeyErr("err_pass_short");
-    if (rPass.value !== rPass2.value) throw new I18N.KeyErr("err_pass_match");
-    await resetCall({ action: "confirm", email: rEmail.value.trim(), code: rCode.value.trim(), password: rPass.value });
-    const email = rEmail.value;
-    showReset(false); setMode("login"); fEmail.value = email; fPass.value = "";
-    I18N.msg(authMsg, "pass_changed", true);
-  } catch (err) { rShowErr(err); }
-  finally { rBtn.disabled = false; }
-});
-
-sb.auth.getSession().then(({ data }) => {
-  if (data.session) {
-    navActions.innerHTML = '<a class="btn brand sm" href="/dashboard.html" data-i18n="nav_panel"></a>';
-    I18N.aplicar(navActions);
-  }
-});
-</script>
 </body>
 </html>

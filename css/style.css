@@ -228,3 +228,14 @@ dialog{max-height:92vh;max-height:92dvh;overflow-y:auto}
   .topbar .right{gap:6px}
   .urlpill #urlTxt{display:none}
 }
+
+/* Topo da pagina inicial em telas estreitas: botoes sempre em uma linha */
+.nav .btn{white-space:nowrap}
+@media(max-width:430px){
+  .nav{padding:10px 3vw}
+  .nav .logo-img{height:40px}
+  .nav .actions{gap:5px}
+  .nav .lang{gap:0;padding:2px}
+  .nav .lang button{padding:4px 5px;font-size:10.5px}
+  .nav .btn.sm{padding:8px 10px;font-size:12px}
+}
