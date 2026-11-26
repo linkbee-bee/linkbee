@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /dashboard.html
+Disallow: /conta.html
+
+Sitemap: https://www.linkbee.ink/sitemap.xml
